@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css?family=Montserrat');
+@import url('https://fonts.googleapis.com/css?family=Montserrat:400,600&display=swap');
 
 /* Global Styles */
 :root {
@@ -101,6 +101,10 @@ img {
   border-bottom: 1px solid #ccc;
   /* border: #ccc 1px dotted; */
   margin: 0.7rem 0;
+}
+
+.card span {
+    font-weight: 600;
 }
 
 /* List */

@@ -13,7 +13,7 @@ const Home = () => {
   }, []);
 
   return (
-    <div className='grid-2'>
+    <div className='grid-2 form-container'>
       <div>
         <ContactForm />
       </div>

@@ -36,11 +36,14 @@ const ContactForm = () => {
 
     const { firstName, lastName, email, phone } = contact;
 
-    const onChange = e =>
-        setContact({ ...contact, [e.target.name]: e.target.value });
+    const onChange = event => {
+        console.log(event.target.name)
+        setContact({ ...contact, [event.target.name]: event.target.value });
+    }
 
     const onSubmit = e => {
         e.preventDefault();
+        console.log(contact)
         if (current === null) {
             addContact(contact);
         } else {
@@ -94,17 +97,18 @@ const ContactForm = () => {
             <div>
                 <input
                     type='submit'
-                    value={current ? 'Update Contact' : 'New Contact'}
+                    value='New Contact'
+                    // value={current ? 'Update Contact' : 'New Contact'}
                     className='btn btn-primary btn-block'
                 />
             </div>
-            {current && (
+            {/* {current && (
                 <div>
                     <button className='btn btn-light btn-block' onClick={clearAll}>
                         Cancel
           </button>
                 </div>
-            )}
+            )} */}
         </form>
     );
 };

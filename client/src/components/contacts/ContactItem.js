@@ -4,7 +4,7 @@ import ContactContext from '../../context/contact/contactContext';
 
 const ContactItem = ({ contact }) => {
     const contactContext = useContext(ContactContext);
-    const { deleteContact, setCurrent, clearCurrent } = contactContext;
+    const { deleteContact, clearCurrent } = contactContext;
 
     const { _id, firstName, lastName, email, phone } = contact;
 
@@ -13,58 +13,31 @@ const ContactItem = ({ contact }) => {
         clearCurrent();
     };
 
+    const formatPhoneNumber = (phoneNumberString) => {
+        const cleaned = ('' + phoneNumberString).replace(/\D/g, '')
+        const match = cleaned.match(/^(\d{3})(\d{3})(\d{4})$/)
+        if (match) {
+          return '(' + match[1] + ') ' + match[2] + '-' + match[3]
+        }
+        return phoneNumberString
+      }
+
     return (
         <div className='card'>
-            {firstName}{'  '}
-            {lastName && (lastName)}
+            <span>{firstName}{'  '}
+            {lastName && (lastName)}</span>
             <br />
             {email && (email)}
             <br />
-            {phone && (phone)}
+            {phone && (formatPhoneNumber(phone))}
             <div className='flex-right'>
                 <button
-                    className='btn btn-dark btn-circle btn-sm'
-                    onClick={() => setCurrent(contact)}
-                >Edit</button>
-                <button className='btn btn-danger btn-circle btn-sm' onClick={onDelete}>X</button>
+                    className='btn btn-danger btn-circle btn-sm'
+                    onClick={onDelete}
+                >X</button>
             </div>
         </div>
     );
-
-
-    // return (
-    //     <div className='card bg-light'>
-    //         <h3 className='text-primary text-left'>
-    //             {firstName}{' '}
-    //         </h3>
-    //         <h3 className='text-primary text-left'>
-    //             {lastName}{' '}
-    //         </h3>
-    //         <ul className='list'>
-    //             {email && (
-    //                 <li>
-    //                     <i className='fas fa-envelope-open' /> {email}
-    //                 </li>
-    //             )}
-    //             {phone && (
-    //                 <li>
-    //                     <i className='fas fa-phone' /> {phone}
-    //                 </li>
-    //             )}
-    //         </ul>
-    //         <p>
-    //             <button
-    //                 className='btn btn-dark btn-circle btn-sm'
-    //                 onClick={() => setCurrent(contact)}
-    //             >
-    //                 Edit
-    //     </button>
-    //             <button className='btn btn-danger btn-circle btn-sm' onClick={onDelete}>
-    //                 X
-    //     </button>
-    //         </p>
-    //     </div>
-    // );
 };
 
 ContactItem.propTypes = {
