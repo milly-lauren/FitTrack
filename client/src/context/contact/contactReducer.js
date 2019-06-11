@@ -4,7 +4,6 @@ import {
   DELETE_CONTACT,
   SET_CURRENT,
   CLEAR_CURRENT,
-  UPDATE_CONTACT,
   FILTER_CONTACTS,
   CLEAR_FILTER,
   CONTACT_ERROR,
@@ -23,14 +22,6 @@ export default (state, action) => {
       return {
         ...state,
         contacts: [action.payload, ...state.contacts],
-        loading: false
-      };
-    case UPDATE_CONTACT:
-      return {
-        ...state,
-        contacts: state.contacts.map(contact =>
-          contact._id === action.payload._id ? action.payload : contact
-        ),
         loading: false
       };
     case DELETE_CONTACT:

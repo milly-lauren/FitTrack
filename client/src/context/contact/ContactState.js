@@ -8,7 +8,6 @@ import {
   DELETE_CONTACT,
   SET_CURRENT,
   CLEAR_CURRENT,
-  UPDATE_CONTACT,
   FILTER_CONTACTS,
   CLEAR_CONTACTS,
   CLEAR_FILTER,
@@ -82,33 +81,6 @@ const ContactState = props => {
     }
   };
 
-  // Update Contact
-  const updateContact = async contact => {
-    const config = {
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    };
-
-    try {
-      const res = await axios.put(
-        `/api/contacts/${contact._id}`,
-        contact,
-        config
-      );
-
-      dispatch({
-        type: UPDATE_CONTACT,
-        payload: res.data
-      });
-    } catch (err) {
-      dispatch({
-        type: CONTACT_ERROR,
-        payload: err.response.msg
-      });
-    }
-  };
-
   // Clear Contacts
   const clearContacts = () => {
     dispatch({ type: CLEAR_CONTACTS });
@@ -145,7 +117,6 @@ const ContactState = props => {
         deleteContact,
         setCurrent,
         clearCurrent,
-        updateContact,
         filterContacts,
         clearFilter,
         getContacts,

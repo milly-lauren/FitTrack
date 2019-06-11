@@ -5,24 +5,25 @@ import ContactFilter from '../contacts/ContactFilter';
 import AuthContext from '../../context/auth/authContext';
 
 const Home = () => {
-  const authContext = useContext(AuthContext);
+    const authContext = useContext(AuthContext);
 
-  useEffect(() => {
-    authContext.loadUser();
+    // shutup
     // eslint-disable-next-line
-  }, []);
+    useEffect(() => {
+        authContext.loadUser();
+    }, []);
 
-  return (
-    <div className='grid-2 form-container'>
-      <div>
-        <ContactForm />
-      </div>
-      <div>
-        <ContactFilter />
-        <Contacts />
-      </div>
-    </div>
-  );
+    return (
+        <div className='grid-2 form-container'>
+            <div>
+                <ContactForm />
+            </div>
+            <div>
+                <ContactFilter />
+                <Contacts />
+            </div>
+        </div>
+    );
 };
 
 export default Home;
