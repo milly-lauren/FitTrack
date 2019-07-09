@@ -1,65 +1,59 @@
-import React, { useState, useContext, useEffect } from 'react';
-import ContactContext from '../../context/contact/contactContext';
-import AuthContext from '../../context/auth/authContext';
+import React, { useState, useContext, useEffect } from 'react'
+import ContactContext from '../../context/contact/contactContext'
+import AuthContext from '../../context/auth/authContext'
 
 const ContactForm = () => {
-    const contactContext = useContext(ContactContext);
-    const authContext = useContext(AuthContext);
+    const contactContext = useContext(ContactContext)
+    const authContext = useContext(AuthContext)
 
-    const { logout } = authContext;
-    const { addContact, clearCurrent, current, clearContacts } = contactContext;
+    const { logout } = authContext
+    const { addContact, clearCurrent, current, clearContacts } = contactContext
 
     const onLogout = () => {
-        logout();
-        clearContacts();
-    };
+        logout()
+        clearContacts()
+    }
 
     useEffect(() => {
         if (current !== null) {
-            setContact(current);
+            setContact(current)
         } else {
             setContact({
                 firstName: '',
                 lastName: '',
                 email: '',
                 phone: ''
-            });
+            })
         }
-    }, [contactContext, current]);
+    }, [contactContext, current])
 
     const [contact, setContact] = useState({
         firstName: '',
         lastName: '',
         email: '',
         phone: ''
-    });
+    })
 
-    const { firstName, lastName, email, phone } = contact;
+    const { firstName, lastName, email, phone } = contact
+
 
     const onChange = event => {
-        console.log(event.target.name)
-        setContact({ ...contact, [event.target.name]: event.target.value });
+        setContact({ ...contact, [event.target.name]: event.target.value })
     }
 
     const onSubmit = e => {
-        e.preventDefault();
-        console.log(contact)
-        addContact(contact);
-        clearAll();
-    };
+        e.preventDefault()
+        addContact(contact)
+        clearAll()
+    }
 
     const clearAll = () => {
-        clearCurrent();
-    };
+        clearCurrent()
+    }
 
     return (
         <form onSubmit={onSubmit}>
-            <div className='space-between'>
-                <h2 className='text-primary'>New Contact</h2>
-                <a className='btn btn-dark btn-circle btn-sm' onClick={onLogout} href='#!'>
-                    <span className=''>Logout</span>
-                </a>
-            </div>
+            <h2 className='text-light'>New Contact</h2>
             <input
                 type='text'
                 placeholder='First name'
@@ -92,11 +86,11 @@ const ContactForm = () => {
                 <input
                     type='submit'
                     value='New Contact'
-                    className='btn btn-primary btn-block'
+                    className='btn btn-yellow btn-block'
                 />
             </div>
         </form>
-    );
-};
+    )
+}
 
-export default ContactForm;
+export default ContactForm

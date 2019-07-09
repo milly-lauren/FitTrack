@@ -3,9 +3,10 @@
 /* Global Styles */
 :root {
   /* --primary-color: #003699; */
-  --primary-color: #000000;
+  --primary-color: 25, 25, 25;
   --dark-color: #000000;
   --light-color: #f4f4f4;
+  --yellow-color: 226, 194, 57;
   --danger-color: #dc3545;
   --success-color: #28a745;
 }
@@ -15,6 +16,7 @@
   margin: 0;
   padding: 0;
   font-family: 'Montserrat', sans-serif;
+  outline: none;
 }
 
 *::placeholder {
@@ -24,7 +26,13 @@
 body {
   font-size: 1rem;
   line-height: 1.6;
-  background-color: #fff;
+  background-image: url(https://www.rei.com/blog/wp-content/uploads/2017/10/Vagnini_091316_2065_Boots-1400x600.jpg);
+  height: 100vh;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+
+  /* background-color: rgb(241, 240, 245); */
   color: #333;
 }
 
@@ -76,11 +84,15 @@ img {
 }
 
 .text-primary {
-  color: var(--primary-color);
+  color: rgb(var(--primary-color));
 }
 
 .text-dark {
   color: var(--dark-color);
+}
+
+.text-light {
+    color: var(--light-color);
 }
 
 .text-center {
@@ -266,12 +278,52 @@ img {
   color: #333;
 }
 
+.op-100 {
+    opacity: 1;
+}
+.op-9 {
+    opacity: .9;
+}
+.op-8 {
+    opacity: .8;
+}
+.op-7 {
+    opacity: .7;
+}
+.op-6 {
+    opacity: .6;
+}
+.op-5 {
+    opacity: .5;
+}
+.op-4 {
+    opacity: .4;
+}
+.op-3 {
+    opacity: .3;
+}
+.op-2 {
+    opacity: .2;
+}
+.op-1 {
+    opacity: .1;
+}
+
 .btn-primary,
 .bg-primary,
 .badge-primary,
 .alert-primary {
-  background: var(--primary-color);
+  background: rgb(var(--primary-color));
   color: #fff;
+}
+
+.btn-yellow {
+    background-color: rgb(var(--yellow-color));
+    color: #333;
+}
+
+.bg-primary-9 {
+    background: rgba(var(--primary-color),.9);
 }
 
 .btn-light,
@@ -320,7 +372,7 @@ img {
 }
 
 .search {
-    border-radius: 5px;
+    border-radius: 3px;
 }
 
 /* .bg-light, */
@@ -351,9 +403,14 @@ select,
 textarea {
   display: block;
   width: 100%;
-  padding: 0.4rem;
-  font-size: 1.2rem;
+  padding: .4rem 1rem;
+  font-size: .9rem;
   border: 1px solid #ccc;
+  color: #ccc;
+}
+
+input::placeholder {
+    font-size: .9rem;
 }
 
 input[type='submit'],
@@ -367,16 +424,20 @@ button {
 
 .form-group input {
   margin: 0.2rem 0;
-  border-radius: 5px;
+  border-radius: 3px;
+  background-color: rgba(var(--primary-color),.8);
+}
+
+input:focus {
+    background-color: var(--light-color);
+    color: rgb(var(--primary-color));
 }
 
 .form-container {
-  max-width: 500px;
-  margin: 2rem auto;
-  overflow: hidden;
-  padding: 2rem 2rem 1rem 2rem;
-  border: 1px solid #ccc;
-  border-radius: 10px;
+  max-width: 375px;
+  margin: 3rem auto;
+  padding: 1rem 3rem 1rem 3rem;
+  border-radius: 3px;
 }
 
 .form-container h1,
@@ -422,12 +483,14 @@ table th {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.7rem 2rem;
+  padding: 1rem 2rem;
   z-index: 1;
   width: 100%;
-  border-bottom: solid 1px var(--primary-color);
-  opacity: 0.9;
-  margin-bottom: 1rem;
+}
+
+.navbar img {
+    display: flex;
+    align-self: center;
 }
 
 .navbar ul {
@@ -477,8 +540,17 @@ table th {
   }
 
   .form-container {
-      padding: 0;
-      border: none;
+      padding: 1rem;
+      /* margin: 0; */
+      /* left: 0; */
+      /* position: absolute; */
+      /* max-width: none; */
+      /* height: 100%; */
+      /* width: 100%; */
+      /* border-radius: 0; */
+      /* opacity: .95; */
+      /* opacity: 1; */
+      /* background: rgb(255, 255, 200); */
   }
 
   /* Text Styles */
@@ -496,12 +568,18 @@ table th {
 
   /* Navbar */
   .navbar {
-    display: block;
-    text-align: center;
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1rem;
+    /* background-color: transparent; */
   }
 
   .navbar h1 {
-    margin-bottom: 0.6rem;
+    /* margin-bottom: 0.6rem; */
+    margin: 0;
+    padding: 0;
   }
 
   .navbar ul {

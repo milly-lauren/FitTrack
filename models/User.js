@@ -1,9 +1,13 @@
 const mongoose = require('mongoose');
 
+/*
+TODO: remove name from object
+*/
+
 const UserSchema = mongoose.Schema({
   name: {
     type: String,
-    required: true
+    required: false
   },
   email: {
     type: String,

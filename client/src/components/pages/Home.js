@@ -1,20 +1,20 @@
-import React, { useContext, useEffect } from 'react';
-import Contacts from '../contacts/Contacts';
-import ContactForm from '../contacts/ContactForm';
-import ContactFilter from '../contacts/ContactFilter';
-import AuthContext from '../../context/auth/authContext';
+import React, { useContext, useEffect } from 'react'
+import Contacts from '../contacts/Contacts'
+import ContactForm from '../contacts/ContactForm'
+import ContactFilter from '../contacts/ContactFilter'
+import AuthContext from '../../context/auth/authContext'
 
 const Home = () => {
-    const authContext = useContext(AuthContext);
+    const authContext = useContext(AuthContext)
 
     // shutup
     // eslint-disable-next-line
     useEffect(() => {
-        authContext.loadUser();
-    }, []);
+        authContext.loadUser()
+    }, [])
 
     return (
-        <div className='grid-2 form-container'>
+        <div className='grid-2 form-container bg-primary-9'>
             <div>
                 <ContactForm />
             </div>
@@ -23,7 +23,7 @@ const Home = () => {
                 <Contacts />
             </div>
         </div>
-    );
-};
+    )
+}
 
-export default Home;
+export default Home

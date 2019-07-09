@@ -1,17 +1,17 @@
-import React, { useContext } from 'react';
-import PropTypes from 'prop-types';
-import ContactContext from '../../context/contact/contactContext';
+import React, { useContext } from 'react'
+import PropTypes from 'prop-types'
+import ContactContext from '../../context/contact/contactContext'
 
 const ContactItem = ({ contact }) => {
-    const contactContext = useContext(ContactContext);
-    const { deleteContact, clearCurrent } = contactContext;
+    const contactContext = useContext(ContactContext)
+    const { deleteContact, clearCurrent } = contactContext
 
-    const { _id, firstName, lastName, email, phone } = contact;
+    const { _id, firstName, lastName, email, phone } = contact
 
     const onDelete = () => {
-        deleteContact(_id);
-        clearCurrent();
-    };
+        deleteContact(_id)
+        clearCurrent()
+    }
 
     const formatPhoneNumber = (phoneNumberString) => {
         const cleaned = ('' + phoneNumberString).replace(/\D/g, '')
@@ -37,11 +37,11 @@ const ContactItem = ({ contact }) => {
                 >X</button>
             </div>
         </div>
-    );
-};
+    )
+}
 
 ContactItem.propTypes = {
     contact: PropTypes.object.isRequired
-};
+}
 
-export default ContactItem;
+export default ContactItem
