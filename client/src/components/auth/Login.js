@@ -17,7 +17,7 @@ const Login = props => {
 
     useEffect(() => {
         if (isAuthenticated) {
-            props.history.push('/')
+            props.history.push('/home')
         }
 
         if (error === 'Invalid Credentials') {

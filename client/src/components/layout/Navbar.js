@@ -29,6 +29,8 @@ const MyNavbar = ({ title, logo, isOpen }) => {
                 <i className='fas fa-sign-out-alt' />{' '}
                 <span className='hide-sm'>Logout</span>
             </a>
+            <Link to='/friends'>Friends</Link>
+            <Link to='/workouts'>Workouts</Link>
         </Fragment>
     )
 

@@ -4,13 +4,12 @@ import React from 'react'
 TODO: landing page
 */
 
-
-const Start = () => {
+const Landing = () => {
     return (
         <div>
-            <h1>Hello</h1>
+            <h1 className='text-light'>Landing</h1>
         </div>
     )
 }
 
-export default Start
+export default Landing
