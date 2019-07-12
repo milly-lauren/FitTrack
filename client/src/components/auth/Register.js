@@ -27,25 +27,29 @@ const Register = props => {
     }, [error, isAuthenticated, props.history])
 
     const [user, setUser] = useState({
-        name: '',
+        // name: '',
         email: '',
-        password: '',
-        password2: ''
+        password: ''
+        // password2: ''
     })
 
-    const { name, email, password, password2 } = user
+    const {
+        // name,
+        email, password
+        // password2
+    } = user
 
     const onChange = e => setUser({ ...user, [e.target.name]: e.target.value })
 
     const onSubmit = e => {
         e.preventDefault()
-        if (name === '' || email === '' || password === '') {
+        if (email === '' || password === '') {
             setAlert('Please enter all fields', 'danger')
-        } else if (password !== password2) {
-            setAlert('Those passwords didn\'t match. Try again.', 'danger')
+        // } else if (password !== password2) {
+        //     setAlert('Those passwords didn\'t match. Try again.', 'danger')
         } else {
             register({
-                name,
+                // name,
                 email,
                 password
             })
