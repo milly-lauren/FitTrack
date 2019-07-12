@@ -7,7 +7,7 @@
     "start": "node server.js",
     "server": "nodemon server.js",
     "client": "npm start --prefix client",
-    "install-win": "npm install && npm install --prefix client && npm audit fix && npm --prefix client audit fix && npm --prefix client install react-scripts --save",
+    "install-win": "npm install --save && npm --prefix client install && npm audit fix && npm --prefix client audit fix && npm --prefix client install react-scripts --save",
     "install-all": "npm install && npm install --prefix client && npm audit fix && npm --prefix client audit fix",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix client && npm run build --prefix client"
