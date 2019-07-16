@@ -9,6 +9,7 @@
   --yellow-color: 226, 194, 57;
   --danger-color: #dc3545;
   --success-color: #28a745;
+  --white-color: #ffffff;
 }
 
 * {
@@ -326,6 +327,10 @@ img {
     background: rgba(var(--primary-color),.9);
 }
 
+.bg-primary-7 {
+  background: rgba(var(--white-color),.7);
+}
+
 .btn-light,
 .bg-light,
 .badge-light,
@@ -476,6 +481,113 @@ table th {
     flex-flow: column nowrap;
     justify-content: center;
     align-items: center;
+}
+
+/* Calender Container*/
+.calender-container {
+  margin: 2rem;
+  padding: 1rem 2rem 1rem 2rem;
+  border-radius: 3px;
+}
+
+.sub-container{
+  display: flex;
+  flex-direction: row;
+  padding: 1rem;
+}
+
+.workout-container{
+  padding: 0.2rem;
+  margin-left: 1rem;
+  border-radius: 3px;
+  background-color: rgb(226, 194, 57);
+  width: 500px;
+  height: 100%;
+}
+
+.workout-sub-container{
+  flex-direction: row;
+}
+
+
+.stats-container{
+  flex-direction: column;
+  display: flex;
+  width: 50%;
+
+}
+
+.map-container{
+  padding:0.25rem;
+  border-style: solid;
+  border-color: black;
+  border-width: medium;
+  width: 85%;
+
+}
+
+.workout-container h1, h2, h3, h4{
+  color: black;
+  text-align: left;
+  font-size: 15px;
+  margin: 0.25rem;
+}
+
+.workout-container pre{
+  color: black;
+  font-style: italic;
+  font-size: 15px;
+}
+
+.workout-container header{
+  font-size: 18px;
+}
+
+.workout-container a{
+
+}
+
+.graph-container{
+  margin: 2rem;
+  margin-top: 8rem;
+  padding: 1rem 2rem 1rem 2rem;
+  border-radius: 3px;
+}
+
+.sub-graph-container{
+  background-color: rgb(226, 194, 57);
+  width:100%;
+  height: 500px;
+}
+
+.month-btn {
+  display: inline-block;
+  background: var(--light-color);
+  color: #333;
+  padding: 1rem 2rem;
+  font-size: 2rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-right: 1.5rem;
+  transition: opacity 0.2s ease-in;
+  outline: none;
+}
+
+.month-btn:hover{
+  opacity: 0.8;
+}
+
+.rowA {
+  display: flex;
+  flex-direction: row;
+  margin-left: 2rem;
+}
+
+.rowB {
+  display: flex;
+  flex-direction: row;
+  margin-left: 2rem;
 }
 
 /* Navbar */

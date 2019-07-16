@@ -34,7 +34,7 @@ const App = () => {
                             <PrivateRoute exact path='/home' component={Home} />
                             <PrivateRoute exact path='/friends' component={Friends} />
                             <PrivateRoute exact path='/workouts' component={Workouts} />
-                            <Route exact path='/' component={Landing} />
+                            <Route exact path='/' component={Landing} /> // was prev Landing
                             <Route exact path='/register' component={Register} />
                             <Route exact path='/login' component={Login} />
                         </Switch>
