@@ -3,9 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "react": "^16.8.6",
-    "react-dom": "^16.8.6",
-    "react-scripts": "3.0.1"
+    "bootstrap": "*",
+    "firebase": "*",
+    "react": "*",
+    "react-dom": "*",
+    "react-router-dom": "*",
+    "react-scripts": "*",
+    "react-with-firebase-auth": "*",
+    "reactstrap": "*"
   },
   "scripts": {
     "start": "react-scripts start",
