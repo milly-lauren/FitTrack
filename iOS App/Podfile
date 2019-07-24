@@ -1,0 +1,30 @@
+# Uncomment the next line to define a global platform for your project
+# platform :ios, '13.0'
+
+target 'FitnessAppTracker' do
+  # Comment the next line if you don't want to use dynamic frameworks
+  use_frameworks!
+
+  # Pods for FitnessAppTracker
+    pod 'Firebase/Core'
+    pod 'Firebase/Auth'
+    pod 'Firebase/Firestore'
+    pod 'Firebase/Analytics'
+    pod 'Firebase/Database'
+    pod 'FirebaseUI'
+    pod 'GoogleSignIn'
+    pod 'FacebookCore'
+    pod 'FacebookLogin' 
+    pod 'FacebookShare'
+
+  target 'FitnessAppTrackerTests' do
+    inherit! :search_paths
+    # Pods for testing
+  end
+
+  target 'FitnessAppTrackerUITests' do
+    inherit! :search_paths
+    # Pods for testing
+  end
+
+end
