@@ -1,4 +1,3 @@
-
 ## Ground truths
 Always use these files for the specified reasons below:
 - Resources: contains all media and styled components 
