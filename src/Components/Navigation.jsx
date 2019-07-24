@@ -108,11 +108,8 @@ class Navigation extends React.Component {
                                 {['Find Friends', 'My Profile', 'Settings'].map(value => {
                                     return <NavItem className='py-2 hover-mobile-menu-link' style={{paddingLeft: '2.9rem'}}><Link>{value}</Link></NavItem>
                                 })}
-                                {/* <NavItem className='py-2 hover-mobile-menu-link'><Link>Find Friends</Link></NavItem>
-                                <NavItem><Link>My Profile</Link></NavItem>
-                                <NavItem><Link>Settings</Link></NavItem> */}
                                 <NavItem onClick={signOut}>Log out</NavItem>
-                                <hr/>
+                                <hr style={{}}/>
                                 <NavItem><Link to='/newActivity'>&#10010; Manual Entry</Link></NavItem>
                             </Nav>
                             :   

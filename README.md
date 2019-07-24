@@ -1,13 +1,20 @@
 
-Ground truths (DO NOT use any other method for the following):
+## Ground truths
+Always use these files for the specified reasons below:
 - Resources: contains all media and styled components 
 - functions: contains user info and db functions
 If you must create a new function, styled component, and/or import a new media file, then put them in their appropriate file.
 
-### `npm start`
-To start development server:
+Use git to clone this branch:
+### `git clone -b firebase-web https://github.com/milly-lauren/FitTrack.git`
 
-TODO:
+Install dependencies with npm:
+### `npm i`
+
+To start development server:
+### `npm start`
+
+## TODO:
 * [x] logo
 * [x] login
 * [x] register
@@ -33,4 +40,4 @@ TODO:
 * [ ] personal (editable) profile
 * [ ] settings
 
-This project was bootstrapped with * [Create React App](https://github.com/facebook/create-react-app).
+This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
