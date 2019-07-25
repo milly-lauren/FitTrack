@@ -32,7 +32,9 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Used to Track Location</string>
+	<string>Used to Track Location for Running</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>Used to Track Location for Running</string>
 	<key>NSMotionUsageDescription</key>
 	<string>Used to Count Steps</string>
 	<key>UIApplicationSceneManifest</key>

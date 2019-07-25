@@ -6,6 +6,10 @@
 //  Copyright © 2019 New Horizon. All rights reserved.
 //
 
+/// ** This Contoller is not used anymore for UI Implementation **
+/// ** Please go to RunningViewController.swift for updated info **
+/// ** Please do not Delete this since it is used for Reference **
+
 import UIKit
 import MapKit
 import CoreLocation

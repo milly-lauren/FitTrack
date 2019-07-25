@@ -11,8 +11,10 @@ import Firebase
 import GoogleSignIn
 import FacebookLogin
 
-class LoginViewController: UIViewController, UITextFieldDelegate, GIDSignInDelegate
+class LoginViewController: UIViewController, UITextFieldDelegate
 {
+    // Place GIDSignInDelegate for Google Sign in
+    
 
     @IBOutlet weak var emailField: UITextField!
     
@@ -20,7 +22,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate, GIDSignInDeleg
     
     @IBOutlet weak var loginButton: UIButton!
     
-    @IBOutlet weak var googleButton: GIDSignInButton!
+    //@IBOutlet weak var googleButton: GIDSignInButton!
 
     override func viewDidLoad()
     {
@@ -31,7 +33,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate, GIDSignInDeleg
         
         // Issue
         //GIDSignIn.sharedInstance().uiDelegate = self
-        GIDSignIn.sharedInstance().signIn()
+        //GIDSignIn.sharedInstance().signIn()
         
     }
     
@@ -60,19 +62,19 @@ class LoginViewController: UIViewController, UITextFieldDelegate, GIDSignInDeleg
         }
     }
     
-    // Function to sign in using a Google Account
-    func sign(_ signIn: GIDSignIn!, didSignInFor user: GIDGoogleUser!, withError error: Error?) {
-        // ...
-        if let error = error {
-            // ...
-            return
-        }
-        
-        guard let authentication = user.authentication else { return }
-        let credential = GoogleAuthProvider.credential(withIDToken: authentication.idToken,
-                                                       accessToken: authentication.accessToken)
-        // ...
-    }
+//    // Function to sign in using a Google Account
+//    func sign(_ signIn: GIDSignIn!, didSignInFor user: GIDGoogleUser!, withError error: Error?) {
+//        // ...
+//        if let error = error {
+//            // ...
+//            return
+//        }
+//
+//        guard let authentication = user.authentication else { return }
+//        let credential = GoogleAuthProvider.credential(withIDToken: authentication.idToken,
+//                                                       accessToken: authentication.accessToken)
+//        // ...
+//    }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool
     {

@@ -7,7 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		43338C4822CACEF7002D1FA4 /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43338C4722CACEF7002D1FA4 /* HomeViewController.swift */; };
+		43063DBC22E9359500FE79C0 /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43063DBB22E9359500FE79C0 /* HomeViewController.swift */; };
+		43063DC022E9362000FE79C0 /* RunningViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43063DBF22E9362000FE79C0 /* RunningViewController.swift */; };
 		437C88F922C979FF008E4A1C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 437C88F822C979FF008E4A1C /* AppDelegate.swift */; };
 		437C88FB22C979FF008E4A1C /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 437C88FA22C979FF008E4A1C /* SceneDelegate.swift */; };
 		437C88FD22C979FF008E4A1C /* InitialViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 437C88FC22C979FF008E4A1C /* InitialViewController.swift */; };
@@ -22,7 +23,6 @@
 		437C893222C9A2B9008E4A1C /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 437C893122C9A2B9008E4A1C /* GoogleService-Info.plist */; };
 		43BFD33422E7B5D300D6C186 /* Running.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43BFD33322E7B5D300D6C186 /* Running.swift */; };
 		43BFD33622E7B75A00D6C186 /* Location.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43BFD33522E7B75A00D6C186 /* Location.swift */; };
-		43DC9C1522E7E24F0051C2B6 /* RunningViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43DC9C1322E7E0760051C2B6 /* RunningViewController.swift */; };
 		43F9141622D769DD00325B58 /* PedometerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43F9141522D769DD00325B58 /* PedometerViewController.swift */; };
 		6D51829D911975A3529D0700 /* Pods_FitnessAppTrackerTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C18C0333EE54ADBDF2CBEBC9 /* Pods_FitnessAppTrackerTests.framework */; };
 		F4C9D76E1AED58E16EEBF089 /* Pods_FitnessAppTracker.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ACE05823055F2509415D52C3 /* Pods_FitnessAppTracker.framework */; };
@@ -51,7 +51,8 @@
 		33D17357B38612B36E498567 /* Pods-FitnessAppTrackerTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FitnessAppTrackerTests.debug.xcconfig"; path = "Target Support Files/Pods-FitnessAppTrackerTests/Pods-FitnessAppTrackerTests.debug.xcconfig"; sourceTree = "<group>"; };
 		35BF9400E4306CFA753E570D /* Pods-FitnessAppTracker.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FitnessAppTracker.debug.xcconfig"; path = "Target Support Files/Pods-FitnessAppTracker/Pods-FitnessAppTracker.debug.xcconfig"; sourceTree = "<group>"; };
 		407112B333A6FC14649688AE /* Pods-FitnessAppTracker.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FitnessAppTracker.release.xcconfig"; path = "Target Support Files/Pods-FitnessAppTracker/Pods-FitnessAppTracker.release.xcconfig"; sourceTree = "<group>"; };
-		43338C4722CACEF7002D1FA4 /* HomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewController.swift; sourceTree = "<group>"; };
+		43063DBB22E9359500FE79C0 /* HomeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HomeViewController.swift; sourceTree = "<group>"; };
+		43063DBF22E9362000FE79C0 /* RunningViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RunningViewController.swift; sourceTree = "<group>"; };
 		437C88F522C979FF008E4A1C /* FitnessAppTracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FitnessAppTracker.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		437C88F822C979FF008E4A1C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		437C88FA22C979FF008E4A1C /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -72,7 +73,6 @@
 		437C893122C9A2B9008E4A1C /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		43BFD33322E7B5D300D6C186 /* Running.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Running.swift; path = ../../../../../System/Volumes/Data/Users/juanrodriguez/Documents/FitnessAppTracker/FitnessAppTracker/Running.swift; sourceTree = "<group>"; };
 		43BFD33522E7B75A00D6C186 /* Location.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Location.swift; path = ../../../../../System/Volumes/Data/Users/juanrodriguez/Documents/FitnessAppTracker/FitnessAppTracker/Location.swift; sourceTree = "<group>"; };
-		43DC9C1322E7E0760051C2B6 /* RunningViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RunningViewController.swift; path = ../../../../../../System/Volumes/Data/Users/juanrodriguez/Documents/FitnessAppTracker/FitnessAppTracker/Controllers/RunningViewController.swift; sourceTree = "<group>"; };
 		43F9141522D769DD00325B58 /* PedometerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PedometerViewController.swift; sourceTree = "<group>"; };
 		6196CBA4DEB366599A9FA77F /* Pods_FitnessAppTrackerUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_FitnessAppTrackerUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		811954C8C1DFB1B3B5D8BCDD /* Pods-FitnessAppTrackerUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FitnessAppTrackerUITests.debug.xcconfig"; path = "Target Support Files/Pods-FitnessAppTrackerUITests/Pods-FitnessAppTrackerUITests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -169,12 +169,12 @@
 		437C892A22C98ACD008E4A1C /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
+				43063DBF22E9362000FE79C0 /* RunningViewController.swift */,
 				437C892B22C98B3D008E4A1C /* MapViewController.swift */,
 				437C892D22C98B9A008E4A1C /* LoginViewController.swift */,
 				437C88FC22C979FF008E4A1C /* InitialViewController.swift */,
 				437C892F22C99527008E4A1C /* SignupViewController.swift */,
-				43DC9C1322E7E0760051C2B6 /* RunningViewController.swift */,
-				43338C4722CACEF7002D1FA4 /* HomeViewController.swift */,
+				43063DBB22E9359500FE79C0 /* HomeViewController.swift */,
 				43F9141522D769DD00325B58 /* PedometerViewController.swift */,
 			);
 			path = Controllers;
@@ -451,8 +451,8 @@
 				43F9141622D769DD00325B58 /* PedometerViewController.swift in Sources */,
 				43BFD33422E7B5D300D6C186 /* Running.swift in Sources */,
 				437C892E22C98B9B008E4A1C /* LoginViewController.swift in Sources */,
-				43DC9C1522E7E24F0051C2B6 /* RunningViewController.swift in Sources */,
-				43338C4822CACEF7002D1FA4 /* HomeViewController.swift in Sources */,
+				43063DC022E9362000FE79C0 /* RunningViewController.swift in Sources */,
+				43063DBC22E9359500FE79C0 /* HomeViewController.swift in Sources */,
 				437C892C22C98B3D008E4A1C /* MapViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

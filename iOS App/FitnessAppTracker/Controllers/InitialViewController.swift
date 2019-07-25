@@ -1,5 +1,5 @@
 //
-//  ViewController.swift
+//  InitialViewController.swift
 //  FitnessAppTracker
 //
 //  Created by Juan  on 6/30/19.

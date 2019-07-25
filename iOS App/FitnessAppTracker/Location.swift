@@ -8,7 +8,11 @@
 
 import Foundation
 import Firebase
-import FirebaseDatabase
+import FirebaseCore
+import FirebaseFirestore
+
+/// * This is supposed to be used for the location array
+/// * I need help setting it up
 
 class Location
 {

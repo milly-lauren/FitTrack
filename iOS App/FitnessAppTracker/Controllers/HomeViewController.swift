@@ -10,6 +10,10 @@ import UIKit
 import Firebase
 import FirebaseAuth
 
+/// ** This Contoller is not used anymore for UI Implementation **
+/// ** Please go to RunningViewController.swift for updated info **
+/// ** Please do not Delete this since it is used for Reference **
+
 class HomeViewController: UIViewController {
     
     override func viewDidLoad() {
@@ -28,6 +32,8 @@ class HomeViewController: UIViewController {
         do
         {
             try Auth.auth().signOut()
+            
+            //GIDSignIn.sharedInstance().signOut()
             
             //self.present(initialNavigationController, animated: true, completion: nil)
         }
