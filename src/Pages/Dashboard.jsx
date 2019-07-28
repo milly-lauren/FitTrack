@@ -235,7 +235,7 @@ class Dashboard extends React.Component {
 
         return (
             <div style={{marginTop: '3.2rem', marginBottom: '1rem'}}>
-                <Modal centered isOpen={isOpen} toggle={this.toggle}>
+                <Modal centered isOpen={isOpen}>
                     <Form className='m-3' onSubmit={e => {
                         e.preventDefault()
 
