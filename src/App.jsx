@@ -62,7 +62,7 @@ class App extends React.Component {
         return (
             <div style={{backgroundColor: 'rgb(255,255,252)'}}>
                 <Navigation />
-                <div style={{margin: '4rem 0'}} />
+                <div style={{margin: '1rem 0'}} />
                 <Switch>
                     <PublicRoute exact path='/' component={Register} />
                     <PublicRoute exact path='/login' component={Login} />

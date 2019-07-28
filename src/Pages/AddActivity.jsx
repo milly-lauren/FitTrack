@@ -17,7 +17,7 @@ import {
     InputGroupText
 } from 'reactstrap'
 import DatePicker from 'react-datepicker'
-import { Link } from 'react-router-dom'
+import { Link, Redirect } from 'react-router-dom'
 
 // Firebase
 import {
@@ -41,6 +41,14 @@ import 'react-datepicker/dist/react-datepicker.css'
 class AddActivity extends React.Component {
     constructor(props) {
         super(props)
+
+        // Round down to 30 min interval and 1 hour before current time
+        const newDate = new Date()
+        newDate.setMinutes(newDate.getMinutes() - newDate.getMinutes()%30)
+        newDate.setHours(newDate.getHours()-1)
+        const newTime = (newDate.getHours() === 0 ? '12' : (newDate.getHours() > 12 ? newDate.getHours()-12 : newDate.getHours()))
+            + ':' + newDate.getMinutes().toString().padStart(2,'0') + (newDate.getHours() >= 12 ? ' PM' : ' AM')
+
         this.state = {
             userInput: {
                 distanceValue: '',
@@ -48,27 +56,23 @@ class AddActivity extends React.Component {
                 hours: '01',
                 minutes: '00',
                 seconds: '00',
-                date: new Date(),
+                date: newDate,
+                time: newTime,
                 tags: [],
                 title: '',
                 description: ''
 
             },
-            isDistanceOpen: false
+            isDistanceOpen: false,
+            isRedirect: false
         }
 
-        // Round down to 30 interval
-        const newDate = this.state.userInput.date
-        if (newDate.getMinutes() % 30 !== 0) {
-            newDate.setMinutes(newDate.getMinutes() - newDate.getMinutes()%30)
-            this.setState({ userInput: { date: newDate }})
-        }
         this.onChange = this.onChange.bind(this)
         this.onChangeDate = this.onChangeDate.bind(this)
         this.onChangeUnits = this.onChangeUnits.bind(this)
         this.onChangeTags = this.onChangeTags.bind(this)
         this.toggleDistance = this.toggleDistance.bind(this)
-        this.clearAllUserInput = this.clearAllUserInput.bind(this)
+        this.redirect = this.redirect.bind(this)
     }
 
     toggleDistance() { this.setState({ isDistanceOpen : !this.state.isDistanceOpen })}
@@ -97,25 +101,8 @@ class AddActivity extends React.Component {
         this.setState(prevState => ({ userInput: { ...prevState.userInput, tags: newTags }}))
     }
 
-    clearAllUserInput() {
-        let newDate = new Date()
-        if (newDate.getMinutes() % 30 !== 0) {
-            newDate.setMinutes(newDate.getMinutes() - newDate.getMinutes()%30)
-        }
-
-        this.setState({
-            userInput: {
-                distanceValue: '',
-                distanceUnit: 'miles',
-                hours: '01',
-                minutes: '00',
-                seconds: '00',
-                date: newDate,
-                tags: [],
-                title: '',
-                description: ''
-            }
-        })
+    redirect() {
+        this.setState({isRedirect: true})
     }
 
     render() {
@@ -127,16 +114,40 @@ class AddActivity extends React.Component {
                 minutes,
                 seconds,
                 date,
+                time,
                 tags,
                 title,
                 description
             },
-            isDistanceOpen
+            isDistanceOpen,
+            isRedirect
         } = this.state
 
+        if (isRedirect) {
+            return <Redirect to='/dashboard' />
+        }
+
+        const timeGenerator = () => {
+            let A = {}
+            for (let hh = 0; hh <= 23; hh++) {
+                for (let mm = 0; mm <= 30; mm+=30) {
+                    const timeString = (hh === 0 ? '12' : (hh > 12 ? hh-12 : hh))
+                    + ':' + mm.toString().padStart(2,'0') + (hh >= 12 ? ' PM' : ' AM')
+                    A[timeString] = [hh,mm]
+                }
+            }
+            return A
+        }
+
+        const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+        const times = timeGenerator()
         return (
             <Container className='mb-4'>
                 <h1 style={{color: 'black'}}>Manual Entry</h1>
+                <p className='text-secondary m-0' style={{fontSize: '.6rem'}}>
+                    {months[parseInt(date.getMonth())] + ' ' + date.getDate() + ', ' + date.getFullYear()
+                    + ' at ' + time}
+                </p>
                 <Form onSubmit={e => {
                     e.preventDefault()  // Don't do whatever you were going to do before
                     
@@ -156,15 +167,17 @@ class AddActivity extends React.Component {
                         minutes,
                         seconds,
                         date.getMonth(),
-                        date.getDay(),
+                        date.getDate(),
                         date.getFullYear(),
-                        date.getHours(),
-                        date.getMinutes(),
+                        // date.getHours(),
+                        // date.getMinutes(),
+                        times[time][0],
+                        times[time][1],
                         tags,
                         title ? title : 'Afternoon Run',
                         description
                     ) // send it
-                    this.clearAllUserInput()  // Clear input
+                    this.redirect() 
                 }}>
                     <Row>
                         <Col xs='12' md='6' lg='4' className='mt-4'>
@@ -196,7 +209,7 @@ class AddActivity extends React.Component {
                                     selected={date}
                                     onChange={this.onChangeDate}
                                 />
-                                <DatePicker
+                                {/* <DatePicker
                                     customInput={<CustomDatePickerButton />}
                                     selected={date}
                                     onChange={this.onChangeDate}
@@ -204,7 +217,16 @@ class AddActivity extends React.Component {
                                     showTimeSelectOnly
                                     timeIntervals={30}
                                     dateFormat='h:mm aa'
-                                />  
+                                />   */}
+                                <select required onChange={this.onChange} name='time' className='custom-select rounded text-white' style={{ maxWidth: '110px', backgroundColor: 'black', border: '1px solid black'}}>
+                                    {Object.keys(times).map((t) => {                                        
+                                        if (t === time) {
+                                            return <option selected value={t}>{t}</option>
+                                        } else {
+                                            return <option value={t}>{t}</option>
+                                        }
+                                    })}
+                                </select>
                             </InputGroup>
                         </Col>
                         <Col xs='12' md='12' lg='4' className='mt-4'>
@@ -290,6 +312,8 @@ class AddActivity extends React.Component {
                         </Col>
                     </Row>
                     
+                    <hr className='mt-4' />
+
                     <Row className='mt-4'>
                         <Col xs='12' md={{size:'4', offset:8}} lg={{size:'4', offset:0}} className='d-flex justify-content-center justify-content-sm-end justify-content-lg-start'>
                             <Button className='' type='submit' style={{backgroundColor: 'black', color: 'white', border: '1px solid black'}}>Create</Button>

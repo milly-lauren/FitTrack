@@ -18,23 +18,28 @@ export const getEmail = () => { return firebaseAppAuth.currentUser.email }
 export const getProfilePicUrl = () => { return firebaseAppAuth.currentUser.photoURL || knightro }
 export const getPhoneNumber = () => { return !!firebaseAppAuth.currentUser.phoneNumber }
 export const isEmailVerified = () => { return !!firebaseAppAuth.currentUser.emailVerified }
+export const getUserId = () => { return firebaseAppAuth.currentUser.uid }
 
-// saves messages to db under collectionName name
-export const sendMessage = (collectionName, message) => {
-    db.collection(collectionName).add({
+export const createProfile = (firstName, lastName, birthMonth, birthDay, birthYear, gender) => {
+    db.collection('users').doc(getUserId()).set({
         name: getUserName(),
-        message: message,
         profilePicUrl: getProfilePicUrl(),
+        firstName,
+        lastName,
+        birthMonth,
+        birthDay,
+        birthYear,
+        gender,
         timestamp: timestamp()
     }).then(() => {
-        console.log('Sent message!')
+        console.log('Successfully created a new profile!')
     }).catch((error) => {
         console.error('Error: ', error)
     })
 }
 
 export const createActivity = (distanceValue, distanceUnit, hours, minutes, seconds, date_month, date_day, date_year, date_hour, date_minute, tags, title, description) => {
-    db.collection('activities').add({
+    db.collection('users').doc(getUserId()).collection('activities').add({
         name: getUserName(),
         profilePicUrl: getProfilePicUrl(),
         distanceValue,
@@ -56,11 +61,4 @@ export const createActivity = (distanceValue, distanceUnit, hours, minutes, seco
     }).catch((error) => {
         console.error('Error: ', error)
     })
-}
-
-const deleteMessage = (id) => {
-    const div = document.getElementById(id)
-    if (div) {
-        div.parentNode.removeChild(div)
-    }
 }

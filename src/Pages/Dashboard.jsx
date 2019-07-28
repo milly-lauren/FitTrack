@@ -2,10 +2,7 @@
 import React from 'react'
 import {
     Card,
-    CardTitle,
-    CardText,
     Form,
-    FormGroup,
     Label,
     Input,
     Button,
@@ -13,10 +10,7 @@ import {
     Row,
     Col,
     Modal,
-    Alert,
-    ModalHeader,
-    ModalBody,
-    ModalFooter
+    Alert
 } from 'reactstrap'
 
 // Firebase
@@ -29,16 +23,9 @@ import {
 import {
     getUserName,
     getProfilePicUrl,
-    sendMessage
+    getUserId,
+    createProfile
 } from '../Firebase/functions'
-
-// Media
-import {
-    sword
-} from '../Components/Resources'
-import { timeout } from 'q';
-
-// Components
 
 
 class Dashboard extends React.Component {
@@ -67,8 +54,8 @@ class Dashboard extends React.Component {
             },
             posts: [],
             isLoading: true,
-            isOpen: true,
-            alert: false
+            isOpen: false,
+            alert: ''
         }
         
         this.onChange = this.onChange.bind(this)
@@ -77,15 +64,23 @@ class Dashboard extends React.Component {
 
     // added listener for live updates from db
     componentDidMount() {
-        const query = db.collection('activities')
-        query.onSnapshot(snapshot => {
-            let posts = []
-            snapshot.forEach(doc => {
-                posts.push(doc.data())
+        const query = db.collection('users').doc(getUserId())
+        let userExists = false
+        query.get().then(snapshot => {
+            if (snapshot.exists) {
+                userExists = true
+            } else {
+                this.setState({ isLoading: false, isOpen: true })
+            }
+        }).then(() => {
+            userExists && query.collection('activities').onSnapshot(snapshot => {
+                let posts = []
+                snapshot.forEach(doc => {
+                    posts.push(doc.data())
+                })
+                console.log(posts)
+                this.setState(prevState => ({ ...prevState, isLoading: false, posts }))
             })
-            this.setState(prevState => (
-                { ...prevState, posts, isLoading: false }
-            ))
         })
     }
 
@@ -99,10 +94,6 @@ class Dashboard extends React.Component {
     toggle() {
         this.setState({ isOpen: !this.state.isOpen })
     }
-
-    // alertState() {
-    //     this.setState({ alert: !this.state.alert })
-    // }
 
     render() {
         const {
@@ -142,7 +133,11 @@ class Dashboard extends React.Component {
                             <Row>
                                 <Col xs='auto'>
                                     <p className='font-weight-bold m-0' style={{fontSize: '.7rem'}}>{post.name}</p>
-                                    <p className='text-secondary m-0' style={{fontSize: '.6rem'}}>{months[parseInt(post.date_month)] + ' ' + post.date_day + ', ' + post.date_year + ' at ' + post.date_hour % 12 + ':' + post.date_minute + ' ' + (post.date_hour % 12 > 0 ? 'PM' : 'AM')}</p>
+                                    <p className='text-secondary m-0' style={{fontSize: '.6rem'}}>
+                                        {months[parseInt(post.date_month)] + ' ' + post.date_day + ', ' + post.date_year
+                                        + ' at ' + (parseInt(post.date_hour) % 12 === 0 ? '12' : post.date_hour)
+                                        + ':' + post.date_minute.toString().padStart(2,'0')
+                                        + ' ' + (post.date_hour % 12 > 0 ? 'PM' : 'AM')}</p>
                                 </Col>
                             </Row>
                             <Row className='mt-2'>
@@ -239,12 +234,13 @@ class Dashboard extends React.Component {
         }
 
         return (
-            <div>
+            <div style={{marginTop: '3.2rem', marginBottom: '1rem'}}>
                 <Modal centered isOpen={isOpen} toggle={this.toggle}>
                     <Form className='m-3' onSubmit={e => {
                         e.preventDefault()
 
                         if (firstName && lastName && birthMonth && birthDay && birthYear && gender) {
+                            createProfile(firstName, lastName, birthMonth, birthDay, birthYear, gender)
                             this.toggle()
                         } else {
                             // TODO: check if age is 13 or older
@@ -256,8 +252,7 @@ class Dashboard extends React.Component {
                             <Col xs='12'>
                                 <p className='font-weight-bold' style={{fontSize: '1.1rem'}}>Create your profile</p>
                                 <p className='mt-n3' style={{fontSize: '.9rem'}}>This will store your activities and help us personalize your experience.</p>
-                                <p className='mt-n3' style={{fontSize: '.9rem', color: 'red'}}>To ignore this screen just click outside of the modal. <br/> {/* TODO: send data to db */}
-                                Current pages: <br/>/  /login  /dashboard  /create-activity  /workout  /home</p>
+                                <p className='mt-n3' style={{fontSize: '.9rem', color: 'red'}}>{getUserId()}</p>
                             </Col>
                         </Row>
                         <Row>
@@ -290,7 +285,7 @@ class Dashboard extends React.Component {
                                 <div className='d-flex flex-row flex-nowrap' id='birthday'>
                                     <select required onChange={this.onChange} name='birthMonth' className='custom-select' style={{border: '1px solid black', borderRight: 'none', borderRadius: '4px 0 0 4px', minWidth: '70px'}}>
                                         {!birthMonth && <option selected>MM</option>}
-                                        {shortMonths.map((month, index) => {return <option value={index}>{month}</option>})}
+                                        {shortMonths.map((month, index) => {return <option value={index+1}>{month}</option>})}
                                     </select>  
                                     <select required onChange={this.onChange} name='birthDay' className='custom-select rounded-0' style={{border: '1px solid black'}}>
                                         {!birthDay && <option selected>DD</option>}
@@ -320,13 +315,14 @@ class Dashboard extends React.Component {
                         </Row>
                     </Form>
                 </Modal>
-                <Container className='mb-4'>
+                <Container>
                     <Row>
                         <Col id='usercard' xs='0' md='3'>
                             <UserCard />
                         </Col>
                         <Col xs='12' md='6'>
-                            { isLoading ? '' : (posts && posts.map(post => {return <ActivityCard post={post} />}) )}
+                            { !isLoading && ( posts && posts.map(post => {return <ActivityCard post={post} />}) )}
+                            { !isLoading && ( posts.length === 0 && <div className='text-center' style={{color: 'rgb(155,155,150)', position: 'relative'}}>:( Make some friends or go for run!</div> )}
                         </Col>
                         <Col xs='0' md='3'>
                             <InfoCard initial='C' />
