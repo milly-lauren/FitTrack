@@ -144,10 +144,6 @@ class AddActivity extends React.Component {
         return (
             <Container className='mb-4'>
                 <h1 style={{color: 'black'}}>Manual Entry</h1>
-                <p className='text-secondary m-0' style={{fontSize: '.6rem'}}>
-                    {months[parseInt(date.getMonth())] + ' ' + date.getDate() + ', ' + date.getFullYear()
-                    + ' at ' + time}
-                </p>
                 <Form onSubmit={e => {
                     e.preventDefault()  // Don't do whatever you were going to do before
                     
