@@ -167,7 +167,7 @@ class Navigation extends React.Component {
                         <Link to='/'>
                             <img style={{width: '7rem'}} src={knightyFit} alt='KnightyFit' />
                         </Link>
-                        Development
+                        {' '}Development
                     </NavbarBrand>
                     <NavbarToggler onClick={this.toggleNav} />
                     { user ? authed : guest }
