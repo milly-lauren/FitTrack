@@ -7,9 +7,6 @@ class Footer extends React.Component {
     render() {
         return (
             <div style={{backgroundColor: 'black', height: '100%'}} className='pt-4'>
-            //     <Container className='text-secondary'>
-            //         <p>{' User id: ' + getUserId()}</p>
-            //     </Container>
             </div>
         )
     }
