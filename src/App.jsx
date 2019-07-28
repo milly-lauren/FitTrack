@@ -18,6 +18,8 @@ import AddActivity from './Pages/AddActivity'
 import Loading from './Pages/Loading'
 import Navigation from './Components/Navigation'
 import Footer from './Components/Footer'
+import Home from './Components/milly/Home'
+import Workouts from './Components/milly/Workouts'
 
 // Style
 import './App.css'
@@ -58,13 +60,16 @@ class App extends React.Component {
         { return <Route exact path={path} render={() => this.state.authed ? <Component /> : <DefaultRoute />} /> }
 
         return (
-            <div>
+            <div style={{backgroundColor: 'rgb(255,255,252)'}}>
                 <Navigation />
+                <div style={{margin: '4rem 0'}} />
                 <Switch>
                     <PublicRoute exact path='/' component={Register} />
                     <PublicRoute exact path='/login' component={Login} />
                     <PrivateRoute exact path='/dashboard' component={Dashboard} />
-                    <PrivateRoute exact path='/newActivity' component={AddActivity} />
+                    <PrivateRoute exact path='/create-activity' component={AddActivity} />
+                    <PrivateRoute exact path='/home' component={Home} />
+                    <PrivateRoute exact path='/workouts' component={Workouts} />
                     <DefaultRoute />
                 </Switch>
                 <Footer />

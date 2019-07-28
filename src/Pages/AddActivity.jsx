@@ -5,14 +5,19 @@ import {
     DropdownMenu,
     DropdownToggle,
     Form,
-    FormGroup,
     Label,
     Input,
     InputGroup,
     InputGroupAddon,
     InputGroupButtonDropdown,
-    Button
+    Button,
+    Container,
+    Row,
+    Col,
+    InputGroupText
 } from 'reactstrap'
+import DatePicker from 'react-datepicker'
+import { Link } from 'react-router-dom'
 
 // Firebase
 import {
@@ -21,10 +26,17 @@ import {
     firebaseAppAuth
 } from '../Firebase/Firebase'
 import {
-    sendMessage
+    createActivity
 } from '../Firebase/functions'
 
 // Components
+import {
+    CustomDatePickerButton,
+    CustomTag
+} from '../Components/Resources'
+
+// Style
+import 'react-datepicker/dist/react-datepicker.css'
 
 class AddActivity extends React.Component {
     constructor(props) {
@@ -33,15 +45,30 @@ class AddActivity extends React.Component {
             userInput: {
                 distanceValue: '',
                 distanceUnit: 'miles',
-                hours: 0,
-                minutes: 0,
-                seconds: 0
+                hours: '01',
+                minutes: '00',
+                seconds: '00',
+                date: new Date(),
+                tags: [],
+                title: '',
+                description: ''
+
             },
             isDistanceOpen: false
         }
+
+        // Round down to 30 interval
+        const newDate = this.state.userInput.date
+        if (newDate.getMinutes() % 30 !== 0) {
+            newDate.setMinutes(newDate.getMinutes() - newDate.getMinutes()%30)
+            this.setState({ userInput: { date: newDate }})
+        }
         this.onChange = this.onChange.bind(this)
-        this.onChangeCustom = this.onChangeCustom.bind(this)
+        this.onChangeDate = this.onChangeDate.bind(this)
+        this.onChangeUnits = this.onChangeUnits.bind(this)
+        this.onChangeTags = this.onChangeTags.bind(this)
         this.toggleDistance = this.toggleDistance.bind(this)
+        this.clearAllUserInput = this.clearAllUserInput.bind(this)
     }
 
     toggleDistance() { this.setState({ isDistanceOpen : !this.state.isDistanceOpen })}
@@ -49,11 +76,46 @@ class AddActivity extends React.Component {
     // Use state as ground truth
     onChange(event) {
         const target = event.target
-        this.setState(prevState => ({ userInput: { ...prevState, [target.name]: target.value} }))
+        this.setState(prevState => ({ userInput: { ...prevState.userInput, [target.name]: target.value }}))
+    }
+    onChangeDate(newDate) {
+        this.setState(prevState => ({ userInput: { ...prevState.userInput, date: newDate }}))
+    }
+    
+    onChangeUnits(value) {
+        this.setState(prevState => ({ userInput: { ...prevState.userInput, distanceUnit: value }}))
     }
 
-    onChangeCustom(name, value) {
-        this.setState({ userInput: { [name]: value } })
+    onChangeTags(event) {
+        const target = event.target
+        let newTags = this.state.userInput.tags
+        if (newTags && newTags.includes(target.name)) {
+            newTags = newTags.filter(item => { return item !== target.name})
+        } else {
+            newTags.push(target.name)
+        }
+        this.setState(prevState => ({ userInput: { ...prevState.userInput, tags: newTags }}))
+    }
+
+    clearAllUserInput() {
+        let newDate = new Date()
+        if (newDate.getMinutes() % 30 !== 0) {
+            newDate.setMinutes(newDate.getMinutes() - newDate.getMinutes()%30)
+        }
+
+        this.setState({
+            userInput: {
+                distanceValue: '',
+                distanceUnit: 'miles',
+                hours: '01',
+                minutes: '00',
+                seconds: '00',
+                date: newDate,
+                tags: [],
+                title: '',
+                description: ''
+            }
+        })
     }
 
     render() {
@@ -63,68 +125,179 @@ class AddActivity extends React.Component {
                 distanceUnit,
                 hours,
                 minutes,
-                seconds
+                seconds,
+                date,
+                tags,
+                title,
+                description
             },
             isDistanceOpen
         } = this.state
 
         return (
-            <div>
-                <h1>Manual Entry</h1>
-                <Form>
-                    {/* Distance form group */}
-                    <FormGroup>
-                        <Label for='distance'>Distance</Label>
-                        <InputGroup id='distance'>
-                            <Input
-                                name='distanceValue'
-                                value={distanceValue}
-                                placeholder='0'
-                                onChange={this.onChange}
-                                required
-                            />
-                            <InputGroupButtonDropdown addonType='append' type='select' name='distanceUnit' isOpen={isDistanceOpen} toggle={this.toggleDistance}>
-                                <DropdownToggle caret>{distanceUnit}</DropdownToggle>
-                                <DropdownMenu>
-                                    {['kilometer', 'meters', 'miles', 'yards'].map(value => {
-                                        if (value !== distanceUnit) { return <DropdownItem onClick={() => this.onChangeCustom('distanceUnit', value)}>{value}</DropdownItem> }
-                                    })}
-                                </DropdownMenu>
-                            </InputGroupButtonDropdown>
-                        </InputGroup>
-                    </FormGroup>
+            <Container className='mb-4'>
+                <h1 style={{color: 'black'}}>Manual Entry</h1>
+                <Form onSubmit={e => {
+                    e.preventDefault()  // Don't do whatever you were going to do before
+                    
+                    let newDistanceValue = distanceValue
+                    if (newDistanceValue.indexOf('.') !== -1) {
+                        const arr = newDistanceValue.split('.')
+                        newDistanceValue = arr[0] + '.' + arr[1].padEnd(2,'0')
+                    } else {
+                        newDistanceValue = newDistanceValue + '.00'
+                    }
+                    const unitsShorthand = {'kilometer': 'km', 'meters': 'm', 'miles': 'mi', 'yards': 'yd'}
 
-                    {/* Duration form group */}
-                    <FormGroup>
-                        <InputGroup>
+                    createActivity(
+                        newDistanceValue,
+                        unitsShorthand[distanceUnit],
+                        hours,
+                        minutes,
+                        seconds,
+                        date.getMonth(),
+                        date.getDay(),
+                        date.getFullYear(),
+                        date.getHours(),
+                        date.getMinutes(),
+                        tags,
+                        title ? title : 'Afternoon Run',
+                        description
+                    ) // send it
+                    this.clearAllUserInput()  // Clear input
+                }}>
+                    <Row>
+                        <Col xs='12' md='6' lg='4' className='mt-4'>
+                            <Label for='distance'>Distance</Label>
+                            <InputGroup id='distance'>
+                                <Input
+                                    name='distanceValue'
+                                    value={distanceValue}
+                                    className='text-center'
+                                    style={{border: '1px solid black'}}
+                                    onChange={this.onChange}
+                                    required
+                                />
+                                <InputGroupButtonDropdown addonType='append' type='select' name='distanceUnit' isOpen={isDistanceOpen} toggle={this.toggleDistance}>
+                                    <DropdownToggle style={{backgroundColor: 'black', border: '1px solid black'}} caret>{distanceUnit}</DropdownToggle>
+                                    <DropdownMenu>
+                                        {['kilometer', 'meters', 'miles', 'yards'].map(unit => {
+                                            if (unit !== distanceUnit) { return <DropdownItem onClick={() => this.onChangeUnits(unit)}>{unit}</DropdownItem> }
+                                        })}
+                                    </DropdownMenu>
+                                </InputGroupButtonDropdown>
+                            </InputGroup>
+                        </Col>
+                        <Col xs='12' md='6' lg='4' className='mt-4'>
+                            <Label for='dateandtime'>Date &amp; Time</Label>
+                            <InputGroup id='dateandtime'>
+                                <DatePicker
+                                    customInput={<CustomDatePickerButton />}
+                                    selected={date}
+                                    onChange={this.onChangeDate}
+                                />
+                                <DatePicker
+                                    customInput={<CustomDatePickerButton />}
+                                    selected={date}
+                                    onChange={this.onChangeDate}
+                                    showTimeSelect
+                                    showTimeSelectOnly
+                                    timeIntervals={30}
+                                    dateFormat='h:mm aa'
+                                />  
+                            </InputGroup>
+                        </Col>
+                        <Col xs='12' md='12' lg='4' className='mt-4'>
+                            <Label for='duration'>Duration</Label>
+                            <InputGroup className='d-flex flex-row flex-wrap flex-sm-nowrap' id='duration'>
+                                <InputGroup style={{maxWidth: '100px'}}>
+                                    <Input
+                                        name='hours'
+                                        value={hours}
+                                        className='text-right'
+                                        onChange={this.onChange}
+                                        style={{border: '1px solid black'}}
+                                    />
+                                    <InputGroupAddon addonType='append'>
+                                        <InputGroupText style={{padding: '0 .75rem', color: 'white', backgroundColor: 'black', border: '1px solid black'}}>hr</InputGroupText>
+                                    </InputGroupAddon>
+                                </InputGroup>
+                                <InputGroup style={{maxWidth: '100px'}}>
+                                    <Input
+                                        name='minutes'
+                                        value={minutes}
+                                        className='text-right'
+                                        onChange={this.onChange}
+                                        style={{border: '1px solid black'}}
+                                    />
+                                    <InputGroupAddon addonType='append'>
+                                        <InputGroupText className='px-2' style={{color: 'white', backgroundColor: 'black', border: '1px solid black'}}>min</InputGroupText>
+                                    </InputGroupAddon>
+                                </InputGroup>
+                                <InputGroup style={{maxWidth: '100px'}}>
+                                    <Input
+                                        name='seconds'
+                                        value={seconds}
+                                        className='text-right'
+                                        onChange={this.onChange}
+                                        style={{border: '1px solid black'}}
+                                    />
+                                    <InputGroupAddon addonType='append'>
+                                        <InputGroupText className='px-3 text-center' style={{color: 'white', backgroundColor: 'black', border: '1px solid black'}}>s</InputGroupText>
+                                    </InputGroupAddon>
+                                </InputGroup>
+                            </InputGroup>
+                        </Col>
+                    </Row>
+
+                    <hr className='mt-4' />
+
+                    <Row>
+                        <Col xs='12' md='6' lg='8' className='mt-4'>
+                            <Label for='title'>Name your Activity</Label>
                             <Input
-                                name='minutes'
+                                id='title'
+                                name='title'
+                                value={title}
+                                placeholder='Afternoon Run'
                                 onChange={this.onChange}
-                                required
+                                style={{border: '1px solid black'}}
                             />
-                            <InputGroupAddon addonType='append'>hr</InputGroupAddon>
-                        </InputGroup>
-                        <InputGroup>
+                        </Col>
+                        <Col xs='12' md='6' lg='4' className='mt-4'>
+                            <Label for='tags'>Tags</Label>
+                            <InputGroup id='tags' className='d-flex flex-row flex-wrap'>
+                                { ['Solo run', 'Group run', 'Event'].map(tag => {
+                                    return <CustomTag checked={tags && tags.includes(tag)} tag={tag} onChange={this.onChangeTags} />
+                                }) }
+                            </InputGroup>
+                        </Col>
+                    </Row>
+
+                    <Row className='mt-4'>
+                        <Col xs='12' lg='8'>
+                            <Label for='description'>Description</Label>
                             <Input
-                                name='seconds'
+                                id='description'
+                                name='description'
+                                type='textarea'
+                                rows='4'
+                                value={description}
+                                placeholder='Mood level? Tired? Any happenings during your run?'
                                 onChange={this.onChange}
-                                required
+                                style={{border: '1px solid black'}}
                             />
-                            <InputGroupAddon addonType='append'>min</InputGroupAddon>
-                        </InputGroup>
-                        <InputGroup>
-                            <Input
-                                name='seconds'
-                                onChange={this.onChange}
-                                required
-                            />
-                            <InputGroupAddon addonType='append'>s</InputGroupAddon>
-                        </InputGroup>
-                    </FormGroup>
-                    <Button>Add activity</Button>
+                        </Col>
+                    </Row>
+                    
+                    <Row className='mt-4'>
+                        <Col xs='12' md={{size:'4', offset:8}} lg={{size:'4', offset:0}} className='d-flex justify-content-center justify-content-sm-end justify-content-lg-start'>
+                            <Button className='' type='submit' style={{backgroundColor: 'black', color: 'white', border: '1px solid black'}}>Create</Button>
+                            <Button className='ml-4' style={{backgroundColor: 'black', border: '1px solid black'}}><Link to='/dashboard' style={{textDecoration: 'none', color: 'white'}}>Cancel</Link></Button>
+                        </Col>
+                    </Row>
                 </Form>
-                <Button>Cancel</Button>
-            </div>
+            </Container>
         )
     }
 }

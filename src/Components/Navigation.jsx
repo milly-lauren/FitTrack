@@ -13,7 +13,8 @@ import {
     Dropdown,
     DropdownToggle,
     DropdownMenu,
-    DropdownItem
+    DropdownItem,
+    Container
 } from 'reactstrap'
 
 // Firebase
@@ -30,6 +31,7 @@ import {
 // Media
 import {
     knightyFit,
+    knightyFitBorder,
     knightro
 } from './Resources'
 
@@ -112,44 +114,44 @@ class Navigation extends React.Component {
                                 <hr style={{}}/>
                                 <NavItem><Link to='/newActivity'>&#10010; Manual Entry</Link></NavItem>
                             </Nav>
-                            :   
+                            :
                             <Nav className={'ml-auto d-flex align-items-center'} style={{padding: '0 0'}} navbar>
                                 {/* University upgrade button */}
                                 <NavItem>
-                                    <Button light color='light' className='px-4 font-weight-bold' style={{padding: '2px'}}>University</Button>
+                                    <Button className='px-4 border-0 font-weight-bold' style={{padding: '2px', color: 'white', backgroundColor: 'rgb(225,193,71)'}}>University</Button>
                                 </NavItem>
                                 <Dropdown onMouseOver={this.onPicMouseOver} onMouseLeave={this.onPicMouseLeave} isOpen={isPicHover || isPicOpen} toggle={this.togglePic} className={'ml-4'} nav inNavbar>
                                     { isPicOpen ? 
-                                        <DropdownToggle className='d-flex justify-content-center align-items-center border-left border-right border-secondary bg-white' style={{paddingLeft: '.75rem'}} nav>
+                                        <DropdownToggle className='d-flex justify-content-center align-items-center bg-white' style={{paddingLeft: '.75rem', borderLeft: '1px solid rgb(108,117,125)', borderRight: '1px solid rgb(108,117,125)'}} nav>
                                             { user ? <img style={{width: '1.9rem', height: '1.9rem', borderRadius: 999}} src={getProfilePicUrl()} alt={knightro} /> : null }
-                                            <div className='text-dark' style={{fontSize: '1.4rem'}}>&#8638;</div>
+                                            <div style={{fontSize: '1.4rem', color: 'black'}}>&#8638;</div>
                                         </DropdownToggle>
                                         :
-                                        <DropdownToggle className='d-flex justify-content-center align-items-center border-left border-right border-dark' style={{paddingLeft: '.75rem'}} nav>
+                                        <DropdownToggle className='d-flex justify-content-center align-items-center' style={{paddingLeft: '.75rem', backgroundColor: 'black', borderLeft: '1px solid black', borderRight: '1px solid black'}} nav>
                                             { user ? <img style={{width: '1.9rem', height: '1.9rem', borderRadius: 999}} src={getProfilePicUrl()} alt={knightro} /> : null }
-                                            <div className='text-light' style={{fontSize: '1.4rem'}}>&#8642;</div>
+                                            <div className='text-white' style={{fontSize: '1.4rem'}}>&#8642;</div>
                                         </DropdownToggle>
                                     }
                                     <DropdownMenu right style={{marginTop: '0', borderRadius: '0 0 6px 6px', borderTop: 'none'}}>
-                                        <DropdownItem>My Profile</DropdownItem>
-                                        <DropdownItem>Settings</DropdownItem>
+                                        <DropdownItem style={{color: 'black'}}>My Profile</DropdownItem>
+                                        <DropdownItem style={{color: 'black'}}>Settings</DropdownItem>
                                         <DropdownItem divider />
-                                        <DropdownItem onClick={signOut}>Log Out</DropdownItem>
+                                        <DropdownItem onClick={signOut} style={{color: 'black'}}>Log Out</DropdownItem>
                                     </DropdownMenu>
                                 </Dropdown>
                                 
                                 <Dropdown onMouseOver={this.onAddMouseOver} onMouseLeave={this.onAddMouseLeave} isOpen={isAddHover || isAddOpen} toggle={this.toggleAdd} className='ml-0 rounded-0 border-0' nav inNavbar>
                                     { isAddOpen ? 
-                                        <DropdownToggle className='border-left border-right border-secondary rounded-0 bg-white' style={{borderWidth: 0, padding: '12px .75rem 12px .75rem'}}>
-                                            <div style={{padding: '0 5px', borderRadius: 999}} className='text-white bg-dark border border-dark'>&#10010;</div>
+                                        <DropdownToggle className='bg-white' style={{borderRadius: 0, border: 'none', padding: '12px .75rem 12px .75rem', borderLeft: '1px solid rgb(108,117,125)', borderRight: '1px solid rgb(108,117,125)'}}>
+                                            <div style={{padding: '0 5px', borderRadius: 999, backgroundColor: 'black', borderColor: 'black'}} className='text-white border'>&#10010;</div>
                                         </DropdownToggle>
                                         :
-                                        <DropdownToggle dark color='dark' className='border-left border-right border-dark rounded-0' style={{borderWidth: 0, padding: '12px .75rem 12px .75rem'}}>
-                                            <div style={{padding: '0 5px', borderRadius: 999}} className='text-light border border-light'>&#10010;</div>
+                                        <DropdownToggle style={{borderRadius: 0, border: 'none', padding: '12px .75rem 12px .75rem', backgroundColor: 'black', borderLeft: '1px solid black', borderRight: '1px solid black'}}>
+                                            <div style={{padding: '0 5px', borderRadius: 999}} className='text-white border border-light'>&#10010;</div>
                                         </DropdownToggle>
                                     }
                                     <DropdownMenu right style={{marginTop: '0', borderRadius: '0 0 6px 6px', borderTop: 'none'}}>
-                                        <DropdownItem><Link to='/newActivity'>&#10010; Manual Entry</Link></DropdownItem>
+                                        <DropdownItem><Link to='/create-activity' style={{textDecoration: 'none', color: 'black'}}>&#10010; Manual Entry</Link></DropdownItem>
                                     </DropdownMenu>
                                 </Dropdown>
                             </Nav>
@@ -159,14 +161,16 @@ class Navigation extends React.Component {
 
         {/* fix padding on mobile */}
         return (
-            <Navbar className='m-0 px-4 py-0 d-flex align-items-center sticky-top' color='dark' dark expand='md'>
-                <NavbarBrand onClick={() => (<Redirect to='/' />)}>
-                    <Link to='/'>
-                        <img style={{width: '7rem'}} src={knightyFit} alt='KnightyFit' />
-                    </Link>
-                </NavbarBrand>
-                <NavbarToggler onClick={this.toggleNav} />
-                { user ? authed : guest }
+            <Navbar className='m-0 p-0 sticky-top' style={{backgroundColor: 'black'}} expand='md'>
+                <Container className='d-flex align-items-center justify-content-between w-100 py-2 px-3 py-md-0'>
+                    <NavbarBrand onClick={() => (<Redirect to='/' />)}>
+                        <Link to='/'>
+                            <img style={{width: '7rem'}} src={knightyFit} alt='KnightyFit' />
+                        </Link>
+                    </NavbarBrand>
+                    <NavbarToggler onClick={this.toggleNav} />
+                    { user ? authed : guest }
+                </Container>
             </Navbar>
         )
     }
