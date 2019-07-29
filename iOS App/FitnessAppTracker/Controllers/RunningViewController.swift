@@ -6,6 +6,7 @@
 //  Copyright © 2019 New Horizon. All rights reserved.
 //
 
+import Foundation
 import UIKit
 import MapKit
 import HealthKit
@@ -16,7 +17,16 @@ import Dispatch
 
 import Firebase
 import FirebaseCore
+import FirebaseStorage
 import FirebaseFirestore
+
+struct imageKeys
+{
+    static let imageFolder =  "imageFolder"
+    static let imageCollection = "imageCollection"
+    static let uid = "uid"
+    static let imageURL = "imageURL"
+}
 
 class RunningViewController: UIViewController
 {
@@ -27,35 +37,38 @@ class RunningViewController: UIViewController
     @IBOutlet weak var startStopButton: UIButton!
     @IBOutlet weak var mapView: MKMapView!
     
-    //let running = Running()
-    
     // Database with Firestore
-    var db: Firestore!
+    var db = Firestore.firestore()
+    let userID = Auth.auth().currentUser!.uid
+    //let currentUser = Auth.auth().currentUser
     
     // Setting up the Location Manager and Region
     let locationManager = CLLocationManager()
     let regionMeters: Double = 1000
     
+    // Setting up Snapshotter
+    let snapshotOptions = MKMapSnapshotter.Options()
+    var snapshot: MKMapSnapshotter!
+    var mapImage: UIImage = UIImage()
+    
     // Defining Variables
+    var totalSeconds = 0.0
     var seconds = 0.0
+    var minutes = 0.0
+    var hours = 0.0
+    
     var distance = 0.0
     var currentPace = 0.0
     var averagePace = 0.0
     var trainingStart: Bool = false
-    var ownerId: String = ""
     
-    
-//    lazy var locationManager: CLLocationManager =
-//    {
-//        var _locationManager = CLLocationManager()
-//        _locationManager.delegate = self
-//        _locationManager.desiredAccuracy = kCLLocationAccuracyBest
-//        _locationManager.activityType = .fitness
-//        _locationManager.distanceFilter = 10.0
-//
-//        return _locationManager
-//    }()
-    
+    // Setting Up Time
+    var year = Calendar.current.component(.year, from: Date())
+    var month = Calendar.current.component(.month, from: Date())
+    var day = Calendar.current.component(.day, from: Date())
+    var dateHour = Calendar.current.component(.hour, from: Date())
+    var dateMinute = Calendar.current.component(.minute, from: Date())
+
     // Lazy Variable is not calaculated at first time
     // Only will run when the variable is called
     lazy var locations = [CLLocation]()
@@ -67,7 +80,15 @@ class RunningViewController: UIViewController
         
         // Checking Location Services
         checkLocationServices()
+        
+        // Configure Button for Intial View
+        startStopButton.setTitle("Start", for: .normal)
+        startStopButton.setTitleColor(UIColor.black, for: .normal)
+        startStopButton.backgroundColor = .green
+        
+        snapshot = MKMapSnapshotter(options: snapshotOptions)
         mapView.delegate = self
+        mapView.userTrackingMode = .follow
     }
     
     override func didReceiveMemoryWarning()
@@ -162,32 +183,12 @@ class RunningViewController: UIViewController
     {
         if let location = locationManager.location?.coordinate
         {
-            let region = MKCoordinateRegion.init(center: location, latitudinalMeters: regionMeters * 2.0, longitudinalMeters: regionMeters * 2.0)
+            let region = MKCoordinateRegion.init(center: location, latitudinalMeters: regionMeters, longitudinalMeters: regionMeters)
             mapView.setRegion(region, animated: true)
+            
+            snapshotOptions.region = region
         }
     }
-    
-//    override func viewWillAppear(_ animated: Bool)
-//    {
-//        super.viewWillAppear(animated)
-//
-//        locationManager = CLLocationManager()
-//        locationManager.delegate = self
-//        locationManager.desiredAccuracy = kCLLocationAccuracyBest
-//        locationManager.allowsBackgroundLocationUpdates = true
-//        locationManager.activityType = .fitness
-//        locationManager.distanceFilter = 10.0
-//        locationManager.requestAlwaysAuthorization()
-//
-//        mapView.showsUserLocation = true
-//    }
-    
-//    override func viewDidAppear(_ animated: Bool)
-//    {
-//        let region: CLLocationDistance = 1000
-//        let coordinateRegion = MKCoordinateRegion(center: mapView.userLocation.coordinate, latitudinalMeters: region * 2.0, longitudinalMeters: region * 2.0)
-//        mapView.setRegion(coordinateRegion, animated: true)
-//    }
     
     // Stops the Timer from display
     override func viewWillDisappear(_ animated: Bool)
@@ -263,78 +264,137 @@ class RunningViewController: UIViewController
     @objc func eachSecond(timer: Timer)
     {
         // Increase seconds by one
+        totalSeconds += 1
         seconds += 1
+  
+        if (seconds.truncatingRemainder(dividingBy: 60) == 0 && seconds != 0)
+        {
+            minutes += 1
+            seconds = 0.0
+        }
         
-        // Update Seconds Value with Health Kit
+        if (seconds.truncatingRemainder(dividingBy: 3600) == 0 && seconds != 0.0)
+        {
+            hours += 1
+            minutes = 0.0
+            seconds = 0.0
+        }
+                
+        // Update Time Value with Health Kit
         let secondsValue = HKQuantity(unit: HKUnit.second(), doubleValue: seconds)
-        timeLabel.text = secondsValue.description
+        let minuteValue = HKQuantity(unit: HKUnit.minute(), doubleValue: minutes)
+        let hourValue = HKQuantity(unit: HKUnit.hour(), doubleValue: hours)
+        
+        timeLabel.text = hourValue.description + " " + minuteValue.description + " " + secondsValue.description
         
         // Update Distance Value with Health Kit
         let distanceValue = HKQuantity(unit: HKUnit.meter(), doubleValue: distance)
+
         distanceLabel.text = distanceValue.description
         
         // Update Pace Value with Health Kit
         let paceUnit = HKUnit.second().unitDivided(by: HKUnit.meter())
-        let paceValue = HKQuantity(unit: paceUnit, doubleValue: seconds / distance)
+        let paceValue = HKQuantity(unit: paceUnit, doubleValue: totalSeconds / distance)
+        
         paceLabel.text = paceValue.description
     }
     
-//    // Save Run to Database
-//    func saveRun()
-//    {
-//        running.distance = Float(distance)
-//        running.duration = Int(seconds)
-//        running.timestamp = NSDate()
-//
-//        for location in locations
-//        {
-//            let _location = Location()
-//            _location.timestamp = location.timestamp as NSDate
-//            _location.latitude = location.coordinate.latitude
-//            _location.longitude = location.coordinate.longitude
-//            //running.locations.append(_location)
-//        }
-
+    func takeSnapshot(){
+        // Take a Snapshot of the Map
+        snapshot.start
+        {
+            (snapshot, error) -> Void in
+                
+            // Take the Snapshot if there is no errors
+            if error == nil
+            {
+                let snapshotImage = snapshot?.image
+                    
+                if (snapshotImage != nil)
+                {
+                    self.mapImage = snapshotImage!
+                }
+                        
+                else
+                {
+                    print("Error: There is no Snapshot")
+                }
+                    
+                let data = self.mapImage.jpegData(compressionQuality: 1.0)
+                
+                let mapImageName = UUID().uuidString
+                    
+                let imageReference = Storage.storage().reference().child(imageKeys.imageFolder).child(mapImageName)
+                    
+                imageReference.putData(data!, metadata: nil)
+                {
+                    (metadata, error) in
+                        
+                    if let error = error
+                    {
+                        print(error)
+                    }
+                    
+                    imageReference.downloadURL
+                    {
+                        (url, error) in
+                        
+                        if let error = error
+                        {
+                            print(error)
+                        }
+                        
+                        guard let url = url else { return }
+                        
+                        let urlString = url.absoluteString
+                    }
+                }
+            }
+        }
+    }
     
     // Save Run to Database
-    /// ** Issues with This, Please Help **
     func saveRun()
     {
-        averagePace = distance / seconds
+        averagePace = distance / totalSeconds
         
-//        running.distance = Float(distance)
-//        running.duration = Int(seconds)
-//        running.pace = Float(averagePace)
-//        running.timestamp = NSDate()
-//
-//        for location in locations
-//        {
-//            let _location = Location()
-//            _location.timestamp = location.timestamp as NSDate
-//            _location.latitude = location.coordinate.latitude
-//            _location.longitude = location.coordinate.longitude
-//            //running.locations.append(_location)
-//        }
-//
-//        // Add the info to the database
-//        var ref: DocumentReference? = nil
-//        ref = db.collection("users").addDocument(data: [
-//            "distance": distance,
-//            "duration": seconds,
-//            "pace": averagePace,
-//            "date": NSData()
-//        ])
-//        { err in
-//            if let err = err
-//            {
-//                print("Error adding document: \(err)")
-//            }
-//            else
-//            {
-//                print("Document added with ID: \(ref!.documentID)")
-//            }
-//        }
+        // Updating Time
+        year = Calendar.current.component(.year, from: Date())
+        month = Calendar.current.component(.month, from: Date())
+        day = Calendar.current.component(.day, from: Date())
+        dateHour = Calendar.current.component(.hour, from: Date())
+        dateMinute = Calendar.current.component(.minute, from: Date())
+    
+        takeSnapshot()
         
+        // Change ID
+        var ref: DocumentReference? = nil
+        ref = db.collection("users/id/activities").addDocument(data: [
+            "distanceValue": distance,
+            "distanceUnit": "meters",
+            "averagePace": averagePace,
+            //"currentUser": currentUser!,
+            "hours": hours,
+            "minutes": minutes,
+            "seconds": seconds,
+            "date_month": month,
+            "date_day": day,
+            "date_year": year,
+            "date_hour": dateHour,
+            "date_minute": dateMinute,
+            //imageKeys.imageURL: urlString,
+            "timestamp": FieldValue.serverTimestamp()
+        ])
+        { err in
+            if let err = err
+            {
+                print("Error adding document: \(err)")
+            }
+            else
+            {
+                print("Document added with ID: \(ref!.documentID)")
+            }
+        }
     }
     
     //User presses Sign Out Button
@@ -344,9 +404,6 @@ class RunningViewController: UIViewController
         do
         {
             try Auth.auth().signOut()
-            
-            //GIDSignIn.sharedInstance().signOut()
-            
         }
         
         // Error Signing Out
@@ -386,7 +443,7 @@ extension RunningViewController: CLLocationManagerDelegate
                     currentPace = location.distance(from: self.locations.last!) / (location.timestamp.timeIntervalSince(self.locations.last!.timestamp))
                     
                     // Sets up Region for Map
-                    let region = MKCoordinateRegion(center: location.coordinate, latitudinalMeters: 500, longitudinalMeters: 500)
+                    let region = MKCoordinateRegion(center: location.coordinate, latitudinalMeters: regionMeters, longitudinalMeters: regionMeters)
                     mapView.setRegion(region, animated: true)
                     
                     // Adds Line

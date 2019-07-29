@@ -116,9 +116,6 @@ class SignupViewController: UIViewController, UITextFieldDelegate
         
         setSignupButton(enable: false)
         
-        //activityView.startAnimating()
-        
-        
         Auth.auth().createUser(withEmail: email, password: password)
         {
             user, error in
