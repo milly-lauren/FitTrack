@@ -20,24 +20,24 @@ To start development server:
 * [x] sign out
 * [x] navigation bar
 * [x] routing
-* [ ] fix navigation on mobile
+* [x] search for friends
+* [x] followers/following
+* [x] add activity
+* [x] fix navigation on mobile
 * [ ] database rules
 * [ ] email verification
-* [ ] landing page - me
+* [ ] ~landing page~
 * [ ] style login/register
 * [ ] dashboard
     - * [x] social feed
     - * [ ] comment on activity
-    - * [ ] like activity - me
-* [x] add activity
-* [ ] currency management - me
-* [ ] non-working paying showcasing page
-* [ ] search for friends
-* [ ] followers/following
+    - * [ ] like activity
+* [ ] currency management
+* [ ] ~non-working paying showcasing page~
 * [ ] public profile
-* [ ] about (pictures of us and stuff lol) 
+* [ ] ~about (pictures of us and stuff lol) ~
 * [ ] personal (editable) profile
-* [ ] settings
+* [ ] ~settings~
 * [ ] map
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
