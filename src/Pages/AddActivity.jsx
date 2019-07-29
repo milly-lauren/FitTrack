@@ -1,15 +1,11 @@
 // React
 import React from 'react'
 import {
-    DropdownItem,
-    DropdownMenu,
-    DropdownToggle,
     Form,
     Label,
     Input,
     InputGroup,
     InputGroupAddon,
-    InputGroupButtonDropdown,
     Button,
     Container,
     Row,
@@ -63,7 +59,6 @@ class AddActivity extends React.Component {
                 description: ''
 
             },
-            isDistanceOpen: false,
             isRedirect: false
         }
 
@@ -71,11 +66,9 @@ class AddActivity extends React.Component {
         this.onChangeDate = this.onChangeDate.bind(this)
         this.onChangeUnits = this.onChangeUnits.bind(this)
         this.onChangeTags = this.onChangeTags.bind(this)
-        this.toggleDistance = this.toggleDistance.bind(this)
         this.redirect = this.redirect.bind(this)
     }
 
-    toggleDistance() { this.setState({ isDistanceOpen : !this.state.isDistanceOpen })}
 
     // Use state as ground truth
     onChange(event) {
@@ -119,7 +112,6 @@ class AddActivity extends React.Component {
                 title,
                 description
             },
-            isDistanceOpen,
             isRedirect
         } = this.state
 
@@ -138,8 +130,9 @@ class AddActivity extends React.Component {
             }
             return A
         }
-
+        
         const times = timeGenerator()
+
         return (
             <Container className='mb-4 cmw'>
                 <h1 style={{color: 'black'}}>Manual Entry</h1>
@@ -182,18 +175,19 @@ class AddActivity extends React.Component {
                                     name='distanceValue'
                                     value={distanceValue}
                                     className='text-center'
-                                    style={{border: '1px solid black'}}
+                                    style={{border: '1px solid gray', background: 'transparent', borderWidth: '1px 0 1px 1px'}}
                                     onChange={this.onChange}
                                     required
                                 />
-                                <InputGroupButtonDropdown addonType='append' type='select' name='distanceUnit' isOpen={isDistanceOpen} toggle={this.toggleDistance}>
-                                    <DropdownToggle style={{backgroundColor: 'black', border: '1px solid black'}} caret>{distanceUnit}</DropdownToggle>
-                                    <DropdownMenu>
-                                        {['kilometer', 'meters', 'miles', 'yards'].map(unit => {
-                                            if (unit !== distanceUnit) { return <DropdownItem onClick={() => this.onChangeUnits(unit)}>{unit}</DropdownItem> }
-                                        })}
-                                    </DropdownMenu>
-                                </InputGroupButtonDropdown>
+                                <select required onChange={this.onChange} name='distanceUnit' className='custom-select' style={{ maxWidth: '130px', backgroundColor: 'transparent', color: 'black', border: '1px solid gray', borderRadius: '0 4px 4px 0'}}>
+                                    {['kilometer', 'meters', 'miles', 'yards'].map((u) => {                                        
+                                        if (u === distanceUnit) {
+                                            return <option selected value={u}>{u}</option>
+                                        } else {
+                                            return <option value={u}>{u}</option>
+                                        }
+                                    })}
+                                </select>
                             </InputGroup>
                         </Col>
                         <Col xs='12' md='6' lg='4' className='mt-4'>
@@ -204,16 +198,7 @@ class AddActivity extends React.Component {
                                     selected={date}
                                     onChange={this.onChangeDate}
                                 />
-                                {/* <DatePicker
-                                    customInput={<CustomDatePickerButton />}
-                                    selected={date}
-                                    onChange={this.onChangeDate}
-                                    showTimeSelect
-                                    showTimeSelectOnly
-                                    timeIntervals={30}
-                                    dateFormat='h:mm aa'
-                                />   */}
-                                <select required onChange={this.onChange} name='time' className='custom-select rounded text-white' style={{ maxWidth: '110px', backgroundColor: 'black', border: '1px solid black'}}>
+                                <select required onChange={this.onChange} name='time' className='custom-select' style={{ maxWidth: '130px', color: 'black', backgroundColor: 'transparent', border: '1px solid gray', borderRadius: '0 4px 4px 0'}}>
                                     {Object.keys(times).map((t) => {                                        
                                         if (t === time) {
                                             return <option selected value={t}>{t}</option>
@@ -233,10 +218,10 @@ class AddActivity extends React.Component {
                                         value={hours}
                                         className='text-right'
                                         onChange={this.onChange}
-                                        style={{border: '1px solid black'}}
+                                        style={{border: '1px solid gray', backgroundColor: 'transparent'}}
                                     />
                                     <InputGroupAddon addonType='append'>
-                                        <InputGroupText style={{padding: '0 .75rem', color: 'white', backgroundColor: 'black', border: '1px solid black'}}>hr</InputGroupText>
+                                        <InputGroupText style={{padding: '0 .75rem', color: 'black', backgroundColor: 'transparent', border: '1px solid gray'}}>hr</InputGroupText>
                                     </InputGroupAddon>
                                 </InputGroup>
                                 <InputGroup style={{maxWidth: '100px'}}>
@@ -245,10 +230,10 @@ class AddActivity extends React.Component {
                                         value={minutes}
                                         className='text-right'
                                         onChange={this.onChange}
-                                        style={{border: '1px solid black'}}
+                                        style={{border: '1px solid gray', backgroundColor: 'transparent'}}
                                     />
                                     <InputGroupAddon addonType='append'>
-                                        <InputGroupText className='px-2' style={{color: 'white', backgroundColor: 'black', border: '1px solid black'}}>min</InputGroupText>
+                                        <InputGroupText className='px-2' style={{color: 'black', backgroundColor: 'transparent', border: '1px solid gray'}}>min</InputGroupText>
                                     </InputGroupAddon>
                                 </InputGroup>
                                 <InputGroup style={{maxWidth: '100px'}}>
@@ -257,10 +242,10 @@ class AddActivity extends React.Component {
                                         value={seconds}
                                         className='text-right'
                                         onChange={this.onChange}
-                                        style={{border: '1px solid black'}}
+                                        style={{border: '1px solid gray', backgroundColor: 'transparent'}}
                                     />
                                     <InputGroupAddon addonType='append'>
-                                        <InputGroupText className='px-3 text-center' style={{color: 'white', backgroundColor: 'black', border: '1px solid black'}}>s</InputGroupText>
+                                        <InputGroupText className='px-3 text-center' style={{color: 'black', backgroundColor: 'transparent', border: '1px solid gray'}}>s</InputGroupText>
                                     </InputGroupAddon>
                                 </InputGroup>
                             </InputGroup>
@@ -278,7 +263,7 @@ class AddActivity extends React.Component {
                                 value={title}
                                 placeholder='Afternoon Run'
                                 onChange={this.onChange}
-                                style={{border: '1px solid black'}}
+                                style={{border: '1px solid gray', backgroundColor: 'transparent'}}
                             />
                         </Col>
                         <Col xs='12' md='6' lg='4' className='mt-4'>
@@ -302,7 +287,7 @@ class AddActivity extends React.Component {
                                 value={description}
                                 placeholder='Mood level? Tired? Any happenings during your run?'
                                 onChange={this.onChange}
-                                style={{border: '1px solid black'}}
+                                style={{border: '1px solid gray', backgroundColor: 'transparent'}}
                             />
                         </Col>
                     </Row>

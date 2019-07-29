@@ -3,8 +3,6 @@ import React from 'react'
 import {
     Jumbotron,
     Container,
-    Row,
-    Col,
     Alert,
     Card,
     CardBody,

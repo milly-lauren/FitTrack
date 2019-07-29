@@ -2,17 +2,16 @@
 import React from 'react'
 import {
     Button,
-    Label,
     Input,
-    InputGroup,
-    InputGroupAddon,
     InputGroupText
 } from 'reactstrap'
 import facebookLogo from '../media/facebookLogo.png'
 import knightyFit from '../media/knighty_fit_logo_no_border.png'
 import knightyFitBorder from '../media/knighty_fit_logo.png'
 import knightro from '../media/knightro.png'
-import sword from '../media/sword.svg'
+import searchBlack from '../media/search.png'
+import searchWhite from '../media/search_white.png'
+import fancyBackground from '../media/fancy_bg.jpg'
 const googleLogo = 'https://cdn4.iconfinder.com/data/icons/new-google-logo-2015/400/new-google-favicon-512.png'
 
 // Media
@@ -22,7 +21,9 @@ export {
     knightyFit,
     knightyFitBorder,
     knightro,
-    sword
+    searchBlack,
+    searchWhite,
+    fancyBackground
 }
 
 // Style components
@@ -38,7 +39,7 @@ export const StyledButton = ({color='dark', signIn, logo, text}) => {
 export class CustomDatePickerButton extends React.Component {
     render() {
         return (
-            <Button secondary color='secondary' style={{backgroundColor: 'black', border: '1px solid black'}} onClick={(e) => {
+            <Button style={{backgroundColor: 'transparent', paddingTop: '6.5px', paddingBottom: '6px', paddingLeft: '1em', paddingRight: '1rem', color: 'black', border: '1px solid gray', borderRadius: '4px 0 0 4px', borderWidth: '1px 0 1px 1px'}} onClick={(e) => {
                 e.preventDefault()
                 this.props.onClick()
             }}>
@@ -50,7 +51,7 @@ export class CustomDatePickerButton extends React.Component {
 
 export const CustomTag = ({checked, tag, onChange:onChangeTags}) => {
     return (
-        <InputGroupText style={{border: '1px solid black', backgroundColor: 'black', color: 'white'}}>
+        <InputGroupText style={{border: (checked ? '1px solid black' : '1px solid gray'), backgroundColor: 'transparent', color: (checked ? 'black' : 'gray')}}>
             <Input addon type='checkbox' checked={checked} name={tag} onChange={onChangeTags} />
             <div className='ml-2'>{tag}</div>
         </InputGroupText>

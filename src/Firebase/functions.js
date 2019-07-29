@@ -5,7 +5,6 @@ import {
 } from './Firebase'
 
 import { knightro } from '../Components/Resources'
-import withFirebaseAuth from 'react-with-firebase-auth';
 
 /*
     Use these whenever you want to get user information
@@ -20,12 +19,13 @@ export const getPhoneNumber = () => { return !!firebaseAppAuth.currentUser.phone
 export const isEmailVerified = () => { return !!firebaseAppAuth.currentUser.emailVerified }
 export const getUserId = () => { return firebaseAppAuth.currentUser.uid }
 
+
 export const createProfile = (firstName, lastName, birthMonth, birthDay, birthYear, gender) => {
     db.collection('users').doc(getUserId()).set({
         name: getUserName(),
         profilePicUrl: getProfilePicUrl(),
-        firstName,
-        lastName,
+        firstName: firstName.toLowerCase(),
+        lastName: lastName.toLowerCase(),
         birthMonth,
         birthDay,
         birthYear,
@@ -34,7 +34,7 @@ export const createProfile = (firstName, lastName, birthMonth, birthDay, birthYe
     }).then(() => {
         console.log('Successfully created a new profile!')
     }).catch((error) => {
-        console.error('Error: ', error)
+        console.error('Error', error)
     })
 }
 
@@ -59,6 +59,42 @@ export const createActivity = (distanceValue, distanceUnit, hours, minutes, seco
     }).then(() => {
         console.log('Activity successfully uploaded!')
     }).catch((error) => {
-        console.error('Error: ', error)
+        console.error('Error', error)
+    })
+}
+
+export const follow = (follow_id, name, profilePicUrl) => {
+    db.collection('users').doc(getUserId()).collection('following').doc(follow_id).set({
+        name: name,
+        profilePicUrl: profilePicUrl,
+        timestamp: timestamp()
+    }).then(() => {
+        console.log('Succesfully added to following!')
+    }).catch((error) => {
+        console.error('Error', error)
+    })
+
+    db.collection('users').doc(follow_id).collection('followers').doc(getUserId()).set({
+        name: getUserName(),
+        profilePicUrl: getProfilePicUrl(),
+        timestamp: timestamp()
+    }).then(() => {
+        console.log('Succesfully added to followed!')
+    }).catch((error) => {
+        console.error('Error', error)
+    })
+}
+
+export const unfollow = (unfollow_id) => {
+    db.collection('users').doc(getUserId()).collection('following').doc(unfollow_id).delete().then(() => {
+        console.log('Succesfully removed from following!')
+    }).catch((error) => {
+        console.error('Error', error)
+    })
+
+    db.collection('users').doc(unfollow_id).collection('followers').doc(getUserId()).delete().then(() => {
+        console.log('Succesfully removed from followers!')
+    }).catch((error) => {
+        console.error('Error', error)
     })
 }

@@ -23,20 +23,21 @@ To start development server:
 * [ ] fix navigation on mobile
 * [ ] database rules
 * [ ] email verification
-* [ ] landing page 
+* [ ] landing page - me
 * [ ] style login/register
 * [ ] dashboard
-    - * [ ] social feed
+    - * [x] social feed
     - * [ ] comment on activity
-    - * [ ] like activity
-* [ ] add activity
-* [ ] currency management
+    - * [ ] like activity - me
+* [x] add activity
+* [ ] currency management - me
 * [ ] non-working paying showcasing page
 * [ ] search for friends
 * [ ] followers/following
 * [ ] public profile
-* [ ] about (pictures of use and stuff lol)
+* [ ] about (pictures of us and stuff lol) 
 * [ ] personal (editable) profile
 * [ ] settings
+* [ ] map
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).

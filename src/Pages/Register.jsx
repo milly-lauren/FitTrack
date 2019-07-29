@@ -1,7 +1,7 @@
 // React
 import React from 'react'
 import {
-    Jumbotron,
+    Container,
     Row,
     Col,
     Alert,
@@ -42,14 +42,12 @@ class Register extends React.Component {
         }
 
         this.onChange = this.onChange.bind(this)
-        this.register = this.register.bind(this)
+        // this.register = this.register.bind(this)
     }
 
     onChange(event) {
         const target = event.target
-        this.setState(prevState => ({
-            userInput: { ...prevState, [target.name]: target.value }
-        }))
+        this.setState(prevState => ({ userInput: { ...prevState.userInput, [target.name]: target.value }}))
     }
 
     register() {
@@ -84,7 +82,7 @@ class Register extends React.Component {
         } = this.state
 
         return (
-            <Jumbotron fluid className='m-0 h-100' style={{backgroundSize: 'cover'}}>
+            <Container className='cmw'>
                 <Row className=''>
                     <Col sm='12' md='6' lg='4' xl='3' className=''>
                         <Card className='px-0-sm px-3-md'>
@@ -128,7 +126,7 @@ class Register extends React.Component {
                         </Card>
                     </Col>
                 </Row>
-            </Jumbotron>
+            </Container>
         )
     }
 }

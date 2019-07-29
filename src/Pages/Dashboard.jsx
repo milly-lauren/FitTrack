@@ -52,7 +52,11 @@ class Dashboard extends React.Component {
                 birthYear: '',
                 gender: ''
             },
+            followers: [],
+            following: [],
+            followingPosts: [],
             posts: [],
+            allPosts: [],
             isLoading: true,
             isOpen: false,
             alert: ''
@@ -72,28 +76,56 @@ class Dashboard extends React.Component {
             } else {
                 this.setState({ isLoading: false, isOpen: true })
             }
-        }).then(() => {
+        }).then(() => { // Get the user's activities
             userExists && query.collection('activities').orderBy('timestamp', 'desc').onSnapshot(snapshot => {
                 let posts = []
                 snapshot.forEach(doc => {
                     posts.push(doc.data())
                 })
-                console.log(posts)
-                this.setState(prevState => ({ ...prevState, isLoading: false, posts }))
+                this.setState({ posts })
             })
-        })
+        }).then(() => { // Get following
+            userExists && query.collection('following').onSnapshot(snapshot => {
+                let following = []
+                snapshot.forEach(doc => {
+                    following.push(doc.id)
+                })
+                this.setState({ following })
+            })
+        }).then(() => { // Get followers
+            userExists && query.collection('followers').onSnapshot(snapshot => {
+                let followers = []
+                snapshot.forEach(doc => {
+                    followers.push([doc.id, doc.data()])
+                })
+                this.setState({ followers })
+            })
+        }).then(() => { // Get following posts
+            userExists && this.state.following.map(follow => {
+                const query = db.collection('users').doc(follow.id).collection('activities').orderBy('timestamp', 'desc').limit(5)
+                query.onSnapshot(snapshot => {
+                    let followingPosts = this.state.followingPosts
+                    snapshot.forEach(doc => {
+                        followingPosts.push(doc.data())
+                    })
+                    this.setState({ followingPosts })
+                }).catch((error) => console.error('Error', error))
+            })
+        }).then(() => {
+            const posts = this.state.posts
+            const followingPosts = this.state.followingPosts
+            const allPosts = posts.concat(followingPosts)
+            this.setState({ isLoading: false, allPosts })
+        }).catch((error) => console.error('Error', error))
     }
 
     // Use state as ground truth
     onChange(event) {
         const target = event.target
         this.setState(prevState => ({ userInput: { ...prevState.userInput, [target.name]: target.value }}))
-        console.log(this.state.userInput)
     }
 
-    toggle() {
-        this.setState({ isOpen: !this.state.isOpen })
-    }
+    toggle() { this.setState({ isOpen: !this.state.isOpen }) }
 
     render() {
         const {
@@ -105,6 +137,10 @@ class Dashboard extends React.Component {
                 birthYear,
                 gender
             },
+            followers,
+            following,
+            followingPosts,
+            allPosts,
             posts,
             isLoading,
             isOpen,
@@ -135,9 +171,9 @@ class Dashboard extends React.Component {
                                     <p className='font-weight-bold m-0' style={{fontSize: '.7rem'}}>{post.name}</p>
                                     <p className='text-secondary m-0' style={{fontSize: '.6rem'}}>
                                         {months[parseInt(post.date_month)] + ' ' + post.date_day + ', ' + post.date_year
-                                        + ' at ' + (parseInt(post.date_hour) % 12 === 0 ? '12' : post.date_hour)
-                                        + ':' + post.date_minute.toString().padStart(2,'0')
-                                        + ' ' + (post.date_hour % 12 > 0 ? 'PM' : 'AM')}</p>
+                                        + ' at ' + (post.date_hour === 0 ? '12' : (post.date_hour > 12 ? post.date_hour-12 : post.date_hour))
+                                        + ':' + post.date_minute.toString().padStart(2,'0') + (post.date_hour >= 12 ? ' PM' : ' AM')}
+                                    </p>
                                 </Col>
                             </Row>
                             <Row className='mt-2'>
@@ -150,13 +186,13 @@ class Dashboard extends React.Component {
                                     <p style={{fontSize: '.6rem'}} className='mt-n3'>{post.description}</p>
                                 </Col>
                             </Row>}
-                            <Row className='mt-n3 d-flex align-items-center justify-content-start'>
-                                <Col xs='auto m-0 p-0'>
+                            <Row className='mt-n3 d-flex align-items-center justify-content-start flex-row flex-wrap'>
+                                <Col xs='auto'>
                                     <Label for='distance' className='text-secondary m-0' style={{fontSize: '.65rem'}}>Distance</Label>
                                     <div className='m-0 mt-n1' id='distance'>{post.distanceValue + ' ' + post.distanceUnit}</div>
                                 </Col>
-                                <div style={{margin: '0 .75rem', height: '1.3rem', width: '1px', marginTop: '5px', backgroundColor: 'rgb(211,211,211)'}}></div>
-                                <Col xs='auto m-0 p-0'>
+                                <div className='d-none d-sm-block' style={{height: '1.3rem', width: '1px', marginTop: '5px', backgroundColor: 'rgb(211,211,211)'}}></div>
+                                <Col xs='auto'>
                                     <Label for='time' className='text-secondary m-0' style={{fontSize: '.65rem'}}>Time</Label>
                                     <div className='m-0 mt-n1' id='distance'>{
                                         (parseInt(post.hours) !== 0 ?
@@ -172,8 +208,8 @@ class Dashboard extends React.Component {
                                         : parseInt(post.seconds)+'s'))
                                     }</div>
                                 </Col>
-                                <div style={{margin: '0 .75rem', height: '1.3rem', width: '1px', marginTop: '5px', backgroundColor: 'rgb(211,211,211)'}}></div>
-                                <Col xs='auto m-0 p-0'>
+                                <div className='d-none d-sm-block' style={{height: '1.3rem', width: '1px', marginTop: '5px', backgroundColor: 'rgb(211,211,211)'}}></div>
+                                <Col xs='auto'>
                                     <Label for='speed' className='text-secondary m-0' style={{fontSize: '.65rem'}}>Avg. Velocity</Label>
                                     <div className='m-0 mt-n1' id='speed'>{
                                         (parseFloat(post.distanceValue) / (parseFloat(post.hours) + parseFloat(post.minutes)/60 + parseFloat(post.seconds)/3600)).toString().substr(0,5)
@@ -209,51 +245,70 @@ class Dashboard extends React.Component {
                             <p className='font-weight-bold' style={{fontSize: '1.1rem'}}>{getUserName()}</p>
                         </Col>
                     </Row>
-                    <Row className='d-flex justify-content-around align-items-center flex-row flex-nowrap mt-n3'>
-                        <Col xs='auto m-0 p-0'>
-                            <Label for='following' className='text-secondary m-0' style={{fontSize: '.65rem'}}>Following</Label>
-                            <div className='m-0 mt-n1 text-center' id='following'>{'0'}</div>
-                        </Col>
-                        <div style={{margin: '0 .75rem', height: '1.3rem', width: '1px', marginTop: '5px', backgroundColor: 'rgb(211,211,211)'}}></div>
-                        <Col xs='auto m-0 p-0'>
-                            <Label for='followers' className='text-secondary m-0' style={{fontSize: '.65rem'}}>Followers</Label>
-                            <div className='m-0 mt-n1 text-center' id='followers'>{'0'}</div>
-                        </Col>
-                        <div style={{margin: '0 .75rem', height: '1.3rem', width: '1px', marginTop: '5px', backgroundColor: 'rgb(211,211,211)'}}></div>
-                        <Col xs='auto m-0 p-0'>
-                            <Label for='activities' className='text-secondary m-0' style={{fontSize: '.65rem'}}>Activities</Label>
-                            <div className='m-0 mt-n1 text-center' id='activities'>{posts.length}</div>
+                    <Row className='mt-n3 mb-n2'>
+                        <Col xs='12' className='d-flex align-items-center justify-content-around flex-row flex-nowrap'>
+                            <div>
+                                <Label for='following' className='text-secondary m-0' style={{fontSize: '.65rem'}}>Following</Label>
+                                <div className='m-0 mt-n1 text-center' id='following'>{following.length}</div>
+                            </div>
+                            <div style={{height: '1.3rem', width: '1px', marginTop: '5px', backgroundColor: 'rgb(211,211,211)'}}></div>
+                            <div>
+                                <Label for='followers' className='text-secondary m-0' style={{fontSize: '.65rem'}}>Followers</Label>
+                                <div className='m-0 mt-n1 text-center' id='followers'>{followers.length}</div>
+                            </div>
+                            <div style={{height: '1.3rem', width: '1px', marginTop: '5px', backgroundColor: 'rgb(211,211,211)'}}></div>
+                            <div>
+                                <Label for='activities' className='text-secondary m-0' style={{fontSize: '.65rem'}}>Activities</Label>
+                                <div className='m-0 mt-n1 text-center' id='activities'>{posts.length}</div>
+                            </div>
                         </Col>
                     </Row>
-                    <div className='' style={{width: '100%'}}><hr /></div>
+                    <div style={{width: '100%'}}><hr /></div>
                     {posts[0] && <Row className='mt-n3'>
                         <Col xs='12'>
                             <Label for='latestActivity' className='m-0' style={{fontSize: '.65rem'}}>Latest Activity</Label>
-                            <div className='m-0 mt-n1 font-weight-bold' style={{fontSize: '.65rem'}} id='latestActivity'>{posts[0].title + ' '}&bull;{' '}</div>
+                            <div className='m-0 mt-n1' style={{fontSize: '.65rem'}} id='latestActivity'><span className='font-weight-bold'>{posts[0].title + ' '}</span>
+                            &bull;{' ' + months[parseInt(posts[0].date_month)] + ' ' + posts[0].date_day + ', ' + posts[0].date_year}
+                            </div>
                         </Col>
                     </Row>}
                 </Card>
             )
         }
 
-        const InfoCard = ({initial, header, body, footer}) => {
+        const InfoCard = ({header, subheader, body, footer, line=false}) => {
             return (
-                <Card body className='border-0 mb-3' style={{boxShadow: '0 0 30px 2px rgb(233,233,233)'}}>
-                        <div style={{width: '2.1rem', height: '2.1rem', borderRadius: 999, border: '1px solid rgb(225,193,71)', color: 'rgb(225,193,71)'}}
-                                className='d-flex align-items-center justify-content-center'>
-                            {initial}
-                        </div>
-                    
+                // <Card body className='border-0 mb-3' style={{boxShadow: '0 0 30px 2px rgb(233,233,233)'}}>
+                // <Card body className='border-0 mb-3' style={{boxShadow: '0 0 30px 2px rgb(0,0,0)'}}>
+                <Card body className='rounded-0 mb-0' style={{background: 'transparent', border: 'none', borderBottom: (line ? '1px solid rgb(211,211,211)' : 'none')}}>
                     <Row>
-                        <Col xs='auto'>
+                        <Col xs='12'>
+                            <p className='font-weight-bold my-0' style={{fontSize: '.9rem'}}>{header}</p>
+                            {subheader ? <p className='text-secondary mt-n1 mb-2' style={{fontSize: '.7rem'}}>{subheader}</p> : <div className='my-1'/>}
                         </Col>
                     </Row>
+                    <Row>
+                        <Col xs='12'>
+                            <p className='my-0' style={{fontSize: '.65rem'}}>{body}</p>
+                        </Col>
+                    </Row>
+                    {footer && <Row>
+                        <Col xs='12'>
+                            <p className='mb-0 mt-2' style={{fontSize: '.65rem'}}>{footer}</p>
+                        </Col>
+                    </Row>}
                 </Card>
             )
         }
 
+        const LeaderboardFriends = () => {
+            return (
+                <div></div>
+            )
+        }
+
         return (
-            <div style={{marginTop: '3.2rem', marginBottom: '1rem'}}>
+            <div style={{paddingTop: '3.2rem', marginBottom: '1rem'}}>
                 <Modal centered isOpen={isOpen}>
                     <Form className='m-3' onSubmit={e => {
                         e.preventDefault()
@@ -335,15 +390,38 @@ class Dashboard extends React.Component {
                 </Modal>
                 <Container className='cmw'>
                     <Row>
-                        <Col id='usercard' xs='0' md='3'>
-                            <UserCard />
+                        {/* <Col md='4' lg='3' className='d-none d-md-inline position-fixed'> */}
+                        <Col  md='4' className='d-none d-md-inline d-lg-none'>
+                            <div style={{width: 'calc(33.33% - 2rem)', position: 'fixed'}}>
+                                <UserCard />
+                            </div>
                         </Col>
-                        <Col xs='12' md='6'>
-                            { !isLoading && ( posts && posts.map(post => {return <ActivityCard post={post} />}) )}
-                            { !isLoading && ( posts.length === 0 && <div className='text-center' style={{color: 'rgb(155,155,150)', position: 'relative'}}>:( Make some friends or go for run!</div> )}
+                        <Col lg='3' className='d-none d-lg-inline d-xl-none'>
+                            <div style={{width: 'calc(25% - 2rem)', position: 'fixed'}}>
+                                <UserCard />
+                            </div>
                         </Col>
-                        <Col xs='0' md='3'>
-                            <InfoCard initial='C' />
+                        <Col xl='3' className='d-none d-xl-inline'>
+                            <div style={{width: 'calc(256.25px - 1.75rem)', position: 'fixed'}}>
+                                <UserCard />
+                            </div>
+                        </Col>
+                        <Col xs='12' md={{size:'8', offset: '0'}} lg={{size:'6', offset: '0'}}>
+                            { !isLoading && posts.length !== 0 && posts.map(post => {return <ActivityCard post={post} />}) }
+                            { !isLoading && posts.length === 0 && <div className='text-center' style={{color: 'rgb(155,155,150)', position: 'relative'}}>:( Make some friends or go for a run!</div> }
+                        </Col>
+                        <Col lg='3' className='d-none d-lg-inline ml-0'>
+                            <InfoCard
+                                header='Challenges'
+                                subheader='Make it your goal!'
+                                body='Join a run or cycling Challenge to stay on top of your game, earn new achievements and see how you stack up.'
+                                footer='Have fun!'
+                                line
+                            />
+                            <InfoCard
+                                header='Friends'
+                                body={'To follow your friends just look them up in our search bar. Input your friend\'s first or last name to find them, then go for a run together!'}
+                            />
                         </Col>
                     </Row>
                 </Container>
