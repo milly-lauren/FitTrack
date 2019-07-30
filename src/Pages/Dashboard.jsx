@@ -152,6 +152,11 @@ class Dashboard extends React.Component {
             alert
         } = this.state
 
+        // const top10 = followingPosts.sort(function(a, b) {
+        //     a = a[1].di
+        //     b = b[1].timestamp.toDate()
+        //     return a>b ? -1 : a<b ? 1 : 0
+        // })
         const allPosts = posts.concat(followingPosts).sort(function(a, b) {
             a = new Date(a[1].timestamp.toDate())
             b = new Date(b[1].timestamp.toDate())
@@ -312,8 +317,11 @@ class Dashboard extends React.Component {
         }
 
         const LeaderboardFriends = () => {
+
             return (
-                <div></div>
+                followingPosts.length !== 0 && followingPosts.map(post => {
+                    return <div></div>
+                })
             )
         }
 
