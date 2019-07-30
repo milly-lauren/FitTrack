@@ -55,8 +55,8 @@ class Dashboard extends React.Component {
             followers: [],
             following: [],
             followingPosts: [],
+            followingPostsIDs: [],
             posts: [],
-            allPosts: [],
             isLoading: true,
             isOpen: false,
             alert: ''
@@ -68,55 +68,61 @@ class Dashboard extends React.Component {
 
     // added listener for live updates from db
     componentDidMount() {
-        const query = db.collection('users').doc(getUserId())
-        let userExists = false
-        query.get().then(snapshot => {
-            if (snapshot.exists) {
-                userExists = true
-            } else {
-                this.setState({ isLoading: false, isOpen: true })
+        const userQuery = db.collection('users').doc(getUserId())
+        const activitiesQuery = db.collection('activities')
+        userQuery.get().then(outerSnapshot => {
+            if (!outerSnapshot) {
+                return this.setState({ isLoading: false, isOpen: true })
             }
-        }).then(() => { // Get the user's activities
-            userExists && query.collection('activities').orderBy('timestamp', 'desc').onSnapshot(snapshot => {
-                let posts = []
-                snapshot.forEach(doc => {
-                    posts.push(doc.data())
-                })
-                this.setState({ posts })
-            })
-        }).then(() => { // Get following
-            userExists && query.collection('following').onSnapshot(snapshot => {
-                let following = []
-                snapshot.forEach(doc => {
-                    following.push(doc.id)
-                })
-                this.setState({ following })
-            })
-        }).then(() => { // Get followers
-            userExists && query.collection('followers').onSnapshot(snapshot => {
-                let followers = []
-                snapshot.forEach(doc => {
-                    followers.push([doc.id, doc.data()])
-                })
-                this.setState({ followers })
-            })
-        }).then(() => { // Get following posts
-            userExists && this.state.following.map(follow => {
-                const query = db.collection('users').doc(follow.id).collection('activities').orderBy('timestamp', 'desc').limit(5)
-                query.onSnapshot(snapshot => {
-                    let followingPosts = this.state.followingPosts
+            this.removeListenerFollowing = userQuery.collection('following')
+                .onSnapshot(snapshot => {
+                    let following = []
                     snapshot.forEach(doc => {
-                        followingPosts.push(doc.data())
+                        following.push(doc.id)
+
+                        this.removeListenerFollowingPosts = activitiesQuery.where('uid', '==', doc.id)
+                            .onSnapshot(innerSnapshot => {
+                                let followingPosts = this.state.followingPosts
+                                let followingPostsIDs = this.state.followingPostsIDs
+                                innerSnapshot.forEach(innerDoc => {
+                                    if (followingPostsIDs.includes(innerDoc.id)) {
+                                        const temp = followingPosts
+                                        followingPosts = []
+                                        temp.map(t => {
+                                            followingPostsIDs.includes(t[0]) && followingPosts.push(t)
+                                        })
+                                        followingPosts.push([innerDoc.id, innerDoc.data()])
+                                    } else {
+                                        followingPosts.push([innerDoc.id, innerDoc.data()])
+                                        followingPostsIDs.push(innerDoc.id)
+                                    }
+                                })
+                                this.setState({ followingPosts, followingPostsIDs })
+                            }, e => console.log('Error', e)
+                        )
                     })
-                    this.setState({ followingPosts })
-                }).catch((error) => console.error('Error', error))
-            })
-        }).then(() => {
-            const posts = this.state.posts
-            const followingPosts = this.state.followingPosts
-            const allPosts = posts.concat(followingPosts)
-            this.setState({ isLoading: false, allPosts })
-        }).catch((error) => console.error('Error', error))
+                    this.setState({ following })
+                }, e => console.log('Error', e)
+            )
+
+            this.removeListenerFollowers = userQuery.collection('followers')
+                .onSnapshot(snapshot => {
+                    let followers = []
+                    snapshot.forEach(doc => followers.push([doc.id, doc.data()]))
+                    this.setState({ followers })
+                }, e => console.log('Error', e)
+            )
+
+            this.removeListenerPosts = activitiesQuery.where('uid', '==', getUserId())
+                .onSnapshot(snapshot => {
+                    let posts = []
+                    snapshot.forEach(doc => posts.push([doc.id, doc.data()]))
+                    this.setState({ posts })
+                }, e => console.log('Error', e)
+            )
+        })
+        .finally(() => this.setState({ isLoading: false }))
+        .catch(e => console.log('Error', e))
     }
 
     // Use state as ground truth
@@ -140,13 +146,17 @@ class Dashboard extends React.Component {
             followers,
             following,
             followingPosts,
-            allPosts,
             posts,
             isLoading,
             isOpen,
             alert
         } = this.state
 
+        const allPosts = posts.concat(followingPosts).sort(function(a, b) {
+            a = new Date(a[1].timestamp.toDate())
+            b = new Date(b[1].timestamp.toDate())
+            return a>b ? -1 : a<b ? 1 : 0
+        })
         const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
         const shortMonths = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
         const genders = ['Male', 'Female', 'Other']
@@ -264,11 +274,11 @@ class Dashboard extends React.Component {
                         </Col>
                     </Row>
                     <div style={{width: '100%'}}><hr /></div>
-                    {posts[0] && <Row className='mt-n3'>
+                    {posts.length !== 0 && <Row className='mt-n3'>
                         <Col xs='12'>
                             <Label for='latestActivity' className='m-0' style={{fontSize: '.65rem'}}>Latest Activity</Label>
-                            <div className='m-0 mt-n1' style={{fontSize: '.65rem'}} id='latestActivity'><span className='font-weight-bold'>{posts[0].title + ' '}</span>
-                            &bull;{' ' + months[parseInt(posts[0].date_month)] + ' ' + posts[0].date_day + ', ' + posts[0].date_year}
+                            <div className='m-0 mt-n1' style={{fontSize: '.65rem'}} id='latestActivity'><span className='font-weight-bold'>{posts[0][1].title + ' '}</span>
+                            &bull;{' ' + months[parseInt(posts[0][1].date_month)] + ' ' + posts[0][1].date_day + ', ' + posts[0][1].date_year}
                             </div>
                         </Col>
                     </Row>}
@@ -407,14 +417,16 @@ class Dashboard extends React.Component {
                             </div>
                         </Col>
                         <Col xs='12' md={{size:'8', offset: '0'}} lg={{size:'6', offset: '0'}}>
-                            { !isLoading && posts.length !== 0 && posts.map(post => {return <ActivityCard post={post} />}) }
-                            { !isLoading && posts.length === 0 && <div className='text-center' style={{color: 'rgb(155,155,150)', position: 'relative'}}>:( Make some friends or go for a run!</div> }
+                            { !isLoading && allPosts.length !== 0 && allPosts.map(post => {
+                                return <ActivityCard post={post[1]} />
+                            }) }
+                            { !isLoading && allPosts.length === 0 && <div className='text-center' style={{color: 'rgb(155,155,150)', position: 'relative'}}>:( Make some friends or go for a run!</div> }
                         </Col>
                         <Col lg='3' className='d-none d-lg-inline ml-0'>
                             <InfoCard
                                 header='Challenges'
                                 subheader='Make it your goal!'
-                                body='Join a run or cycling Challenge to stay on top of your game, earn new achievements and see how you stack up.'
+                                body='Join a run Challenge to stay on top of your game, earn new achievements and see how you stack up.'
                                 footer='Have fun!'
                                 line
                             />

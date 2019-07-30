@@ -356,6 +356,7 @@ class Navigation extends React.Component {
                                 if (result[0] !== getUserId()) {
                                     const isFollowed = !!following.includes(result[0])
                                     isFollowed && this.getSharedFollowing(result[0])
+                                    console.log(isFollowed, sharedFollowing)
                                     return (
                                         <Row style={{ border: '1px solid rgb(211,211,211)', borderWidth: '0 0 1px 0', paddingTop: '.7rem', paddingBottom: '.6rem'}}>
                                             <Col xs='12'>

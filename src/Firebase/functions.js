@@ -39,7 +39,8 @@ export const createProfile = (firstName, lastName, birthMonth, birthDay, birthYe
 }
 
 export const createActivity = (distanceValue, distanceUnit, hours, minutes, seconds, date_month, date_day, date_year, date_hour, date_minute, tags, title, description) => {
-    db.collection('users').doc(getUserId()).collection('activities').add({
+    db.collection('activities').add({
+        uid: getUserId(),
         name: getUserName(),
         profilePicUrl: getProfilePicUrl(),
         distanceValue,
