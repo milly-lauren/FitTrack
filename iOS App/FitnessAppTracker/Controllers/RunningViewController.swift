@@ -19,6 +19,7 @@ import Firebase
 import FirebaseCore
 import FirebaseStorage
 import FirebaseFirestore
+import GoogleSignIn
 
 struct imageKeys
 {
@@ -28,7 +29,7 @@ struct imageKeys
     static let imageURL = "imageURL"
 }
 
-class RunningViewController: UIViewController
+class RunningViewController: UIViewController, GIDSignInUIDelegate
 {
     // Labels and Buttons
     @IBOutlet weak var timeLabel: UILabel!
@@ -40,6 +41,8 @@ class RunningViewController: UIViewController
     // Database with Firestore
     var db = Firestore.firestore()
     let userID = Auth.auth().currentUser!.uid
+    let displayName = Auth.auth().currentUser?.displayName
+    let profilePic = Auth.auth().currentUser?.photoURL
     
     // Setting up the Location Manager and Region
     let locationManager = CLLocationManager()
@@ -299,105 +302,6 @@ class RunningViewController: UIViewController
         paceLabel.text = paceValue.description
     }
     
-    func drawLineOnImage(snapshot: MKMapSnapshotter.Snapshot) -> UIImage {
-        let image = snapshot.image
-        
-        // draw original image into the context
-        image.draw(at: CGPoint.zero)
-        
-        // get the context for CoreGraphics
-        let context = UIGraphicsGetCurrentContext()
-        
-        // set stroking width and color of the context
-        context!.setLineWidth(3.0)
-        context!.setStrokeColor(UIColor.black.cgColor)
-        
-        // apply the stroke to the context
-        context!.strokePath()
-        
-        // get the image from the graphics context
-        let resultImage = UIGraphicsGetImageFromCurrentImageContext()
-        
-        // end the graphics context
-        UIGraphicsEndImageContext()
-        
-        return resultImage!
-    }
-    
-    func takeSnapshot(){
-        
-//        var coordinates = [CLLocationCoordinate2D]()
-//
-//        let polylineSnap = MKPolyline(coordinates: &coordinates, count: coordinates.count)
-//        let polylineSnapRegion = MKCoordinateRegion(polylineSnap.boundingMapRect)
-        
-        // Preparing Size for Snapshot
-        //snapshotOptions.region = polylineSnapRegion
-        snapshotOptions.size = mapView.frame.size
-        snapshotOptions.scale = UIScreen.main.scale
-        snapshotOptions.showsPointsOfInterest = true
-        
-        // Set the size of the image output
-        snapshotOptions.size = CGSize(width: 414, height: 424)
-        
-        // Take a Snapshot of the Map
-        snapshot.start
-        {
-            (snapshot, error) in
-            
-            //guard let snapshot = snapshot else { return }
-            
-            //self.mapImage = snapshot
-            
-            //self.mapImage = self.drawLineOnImage(snapshot: snapshot)
-                
-            // Take the Snapshot if there is no errors
-            if error == nil
-            {
-                let snapshotImage = snapshot?.image
-
-                if (snapshotImage != nil)
-                {
-                    self.mapImage = snapshotImage!
-                }
-
-                else
-                {
-                    print("Error: There is no Snapshot")
-                }
-                    
-                let data = self.mapImage.jpegData(compressionQuality: 1.0)
-                
-                let mapImageName = UUID().uuidString
-                    
-                let imageReference = Storage.storage().reference().child(imageKeys.imageFolder).child(mapImageName)
-                    
-                imageReference.putData(data!, metadata: nil)
-                {
-                    (metadata, error) in
-                        
-                    if let error = error
-                    {
-                        print(error)
-                    }
-                    
-                    imageReference.downloadURL
-                    {
-                        (url, error) in
-                        
-                        if let error = error
-                        {
-                            print(error)
-                        }
-                        
-                        //guard let url = url else { return }
-                        //let urlString = url.absoluteString
-                    }
-                }
-            }
-        }
-    }
-    
     // Save Run to Database
     func saveRun()
     {
@@ -410,8 +314,7 @@ class RunningViewController: UIViewController
         dateHour = Calendar.current.component(.hour, from: Date())
         dateMinute = Calendar.current.component(.minute, from: Date())
     
-        //takeSnapshot()
-        
+        // Takes a screenshot of the Screen
         UIGraphicsBeginImageContextWithOptions(view.frame.size, true, 0)
         guard let context = UIGraphicsGetCurrentContext() else { return }
         view.layer.render(in: context)
@@ -454,7 +357,7 @@ class RunningViewController: UIViewController
         
     
         var ref: DocumentReference? = nil
-        ref = db.collection("users").document(userID).collection("activities").addDocument(data: [
+        ref = db.collection("activities/").addDocument(data: [
             "distanceValue": distance,
             "distanceUnit": "meters",
             "averagePace": averagePace,
@@ -480,6 +383,22 @@ class RunningViewController: UIViewController
                 print("Document added with ID: \(ref!.documentID)")
             }
         }
+        
+        //var secondRef: DocumentReference? = nil
+        let secondRef = db.collection("users").document(userID).setData([
+            "userID": userID,
+            "name": displayName!
+        ])
+        { err in
+            if let err = err
+            {
+                print("Error adding document: \(err)")
+            }
+            else
+            {
+                print("Document added with ID: \(ref!.documentID)")
+            }
+        }
     }
     
     //User presses Sign Out Button
@@ -489,6 +408,8 @@ class RunningViewController: UIViewController
         do
         {
             try Auth.auth().signOut()
+            
+            try GIDSignIn.sharedInstance().signOut()
         }
         
         // Error Signing Out

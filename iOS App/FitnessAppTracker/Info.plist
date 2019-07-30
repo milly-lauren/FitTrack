@@ -2,8 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>Used to Same Image to Photo Library</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en_US</string>
 	<key>CFBundleDisplayName</key>
@@ -27,7 +25,7 @@
 			<string>Editor</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>264673815869-8dqmv7la8tl4pm9sop4ed2i4f8d1h6rc.apps.googleusercontent.com</string>
+				<string>com.googleusercontent.apps.264673815869-8dqmv7la8tl4pm9sop4ed2i4f8d1h6rc</string>
 			</array>
 		</dict>
 	</array>
@@ -41,6 +39,8 @@
 	<string>Used to Track Location for Running</string>
 	<key>NSMotionUsageDescription</key>
 	<string>Used to Count Steps</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Used to Save a Screenshot of Your Run</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
