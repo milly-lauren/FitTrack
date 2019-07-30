@@ -12,7 +12,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
 
-
     @available(iOS 13.0, *)
     @available(iOS 13.0, *)
     @available(iOS 13.0, *)

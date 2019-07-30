@@ -8,16 +8,25 @@
 
 import UIKit
 import Firebase
+import GoogleSignIn
 
-class InitialViewController: UIViewController {
+class InitialViewController: UIViewController, GIDSignInUIDelegate {
 
     @IBOutlet weak var loginButton: UIButton!
     
     @IBOutlet weak var signupButton: UIButton!
     
-    override func viewDidLoad() {
+    @IBOutlet weak var googleSignInButton: GIDSignInButton!
+    
+    override func viewDidLoad()
+    {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
+        
+        if Auth.auth().currentUser != nil
+        {
+            // Checks if the User is Already Sign In
+            self.performSegue(withIdentifier: "signinToHomeScreen", sender: nil)
+        }
     }
     
     // Dispose of any resources that can be recreated.
@@ -34,13 +43,19 @@ class InitialViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool)
     {
         super.viewDidAppear(animated)
+    }
+    
+    @IBAction func googleButtonPressed(_ sender: Any)
+    {
+        // Adding Google Sign In
+        GIDSignIn.sharedInstance().uiDelegate = self
+        GIDSignIn.sharedInstance().signIn()
         
-        //self.performSegue(withIdentifier: "toHomeScreen", sender: self)
-//
-//        if let user = Auth.auth().currentUser
-//        {
-//            self.performSegue(withIdentifier: "toHomeScreen", sender: self)
-//        }
+        // Checks if the user is Sign in with Google Already
+        if Auth.auth().currentUser != nil
+        {
+            self.performSegue(withIdentifier: "googleSigninToHomeScreen", sender: nil)
+        }
     }
 
 

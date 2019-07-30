@@ -4,6 +4,8 @@
 <dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en_US</string>
+	<key>CFBundleDisplayName</key>
+	<string>Knighty Fit</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -23,7 +25,7 @@
 			<string>Editor</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>264673815869-8dqmv7la8tl4pm9sop4ed2i4f8d1h6rc.apps.googleusercontent.com</string>
+				<string>com.googleusercontent.apps.264673815869-8dqmv7la8tl4pm9sop4ed2i4f8d1h6rc</string>
 			</array>
 		</dict>
 	</array>
@@ -31,12 +33,14 @@
 	<string>1</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Used to Track Location for Running</string>
 	<key>NSLocationAlwaysUsageDescription</key>
+	<string>Used to Track Location for Running</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Used to Track Location for Running</string>
 	<key>NSMotionUsageDescription</key>
 	<string>Used to Count Steps</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Used to Save a Screenshot of Your Run</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
