@@ -12,6 +12,7 @@
 
 
 ### Social Feed
+- Search and follow friends
 - Your followers can cheer you on
 - You can cheer on the people you follow
 
