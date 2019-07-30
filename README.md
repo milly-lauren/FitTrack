@@ -21,12 +21,11 @@
   - **_Activity count_**
   - **_Distance_**
   - **_Duration_**
-  - **_Calories_**
+  - **_Pace_**
 
 ### Training History
 - **_Session count_**
 - **_Overall distance_**
 - **_Overall duration_**
-- **_Calories burned_**
 
 
