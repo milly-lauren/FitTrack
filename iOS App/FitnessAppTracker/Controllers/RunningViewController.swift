@@ -40,7 +40,6 @@ class RunningViewController: UIViewController
     // Database with Firestore
     var db = Firestore.firestore()
     let userID = Auth.auth().currentUser!.uid
-    //let currentUser = Auth.auth().currentUser
     
     // Setting up the Location Manager and Region
     let locationManager = CLLocationManager()
@@ -183,6 +182,7 @@ class RunningViewController: UIViewController
     {
         if let location = locationManager.location?.coordinate
         {
+            // Setting up the region
             let region = MKCoordinateRegion.init(center: location, latitudinalMeters: regionMeters, longitudinalMeters: regionMeters)
             mapView.setRegion(region, animated: true)
             
@@ -294,27 +294,73 @@ class RunningViewController: UIViewController
         
         // Update Pace Value with Health Kit
         let paceUnit = HKUnit.second().unitDivided(by: HKUnit.meter())
-        let paceValue = HKQuantity(unit: paceUnit, doubleValue: totalSeconds / distance)
+        let paceValue = HKQuantity(unit: paceUnit, doubleValue: distance / totalSeconds)
         
         paceLabel.text = paceValue.description
     }
     
+    func drawLineOnImage(snapshot: MKMapSnapshotter.Snapshot) -> UIImage {
+        let image = snapshot.image
+        
+        // draw original image into the context
+        image.draw(at: CGPoint.zero)
+        
+        // get the context for CoreGraphics
+        let context = UIGraphicsGetCurrentContext()
+        
+        // set stroking width and color of the context
+        context!.setLineWidth(3.0)
+        context!.setStrokeColor(UIColor.black.cgColor)
+        
+        // apply the stroke to the context
+        context!.strokePath()
+        
+        // get the image from the graphics context
+        let resultImage = UIGraphicsGetImageFromCurrentImageContext()
+        
+        // end the graphics context
+        UIGraphicsEndImageContext()
+        
+        return resultImage!
+    }
+    
     func takeSnapshot(){
+        
+//        var coordinates = [CLLocationCoordinate2D]()
+//
+//        let polylineSnap = MKPolyline(coordinates: &coordinates, count: coordinates.count)
+//        let polylineSnapRegion = MKCoordinateRegion(polylineSnap.boundingMapRect)
+        
+        // Preparing Size for Snapshot
+        //snapshotOptions.region = polylineSnapRegion
+        snapshotOptions.size = mapView.frame.size
+        snapshotOptions.scale = UIScreen.main.scale
+        snapshotOptions.showsPointsOfInterest = true
+        
+        // Set the size of the image output
+        snapshotOptions.size = CGSize(width: 414, height: 424)
+        
         // Take a Snapshot of the Map
         snapshot.start
         {
-            (snapshot, error) -> Void in
+            (snapshot, error) in
+            
+            //guard let snapshot = snapshot else { return }
+            
+            //self.mapImage = snapshot
+            
+            //self.mapImage = self.drawLineOnImage(snapshot: snapshot)
                 
             // Take the Snapshot if there is no errors
             if error == nil
             {
                 let snapshotImage = snapshot?.image
-                    
+
                 if (snapshotImage != nil)
                 {
                     self.mapImage = snapshotImage!
                 }
-                        
+
                 else
                 {
                     print("Error: There is no Snapshot")
@@ -344,9 +390,8 @@ class RunningViewController: UIViewController
                             print(error)
                         }
                         
-                        guard let url = url else { return }
-                        
-                        let urlString = url.absoluteString
+                        //guard let url = url else { return }
+                        //let urlString = url.absoluteString
                     }
                 }
             }
@@ -365,15 +410,55 @@ class RunningViewController: UIViewController
         dateHour = Calendar.current.component(.hour, from: Date())
         dateMinute = Calendar.current.component(.minute, from: Date())
     
-        takeSnapshot()
+        //takeSnapshot()
         
-        // Change ID
+        UIGraphicsBeginImageContextWithOptions(view.frame.size, true, 0)
+        guard let context = UIGraphicsGetCurrentContext() else { return }
+        view.layer.render(in: context)
+        guard let screenshotImage = UIGraphicsGetImageFromCurrentImageContext() else { return }
+        UIGraphicsEndImageContext()
+        
+        //Save it to the camera roll
+        UIImageWriteToSavedPhotosAlbum(screenshotImage, nil, nil, nil)
+        
+        let data = screenshotImage.jpegData(compressionQuality: 1.0)
+        
+        let imageName = UUID().uuidString
+        
+        let imageReference = Storage.storage().reference().child(imageKeys.imageFolder).child(imageName)
+        
+        imageReference.putData(data!, metadata: nil)
+        {
+            (metadata, error) in
+            
+            if let error = error
+            {
+                print(error)
+            }
+            
+            imageReference.downloadURL
+                {
+                    (url, error) in
+                    
+                    if let error = error
+                    {
+                        print(error)
+                    }
+                    
+                    //guard let url = url else { return }
+                    
+                    //let urlString = url.absoluteString
+            }
+        }
+        
+        
+    
         var ref: DocumentReference? = nil
-        ref = db.collection("users/id/activities").addDocument(data: [
+        ref = db.collection("users").document(userID).collection("activities").addDocument(data: [
             "distanceValue": distance,
             "distanceUnit": "meters",
             "averagePace": averagePace,
-            //"currentUser": currentUser!,
+            "userID": userID,
             "hours": hours,
             "minutes": minutes,
             "seconds": seconds,
@@ -382,7 +467,7 @@ class RunningViewController: UIViewController
             "date_year": year,
             "date_hour": dateHour,
             "date_minute": dateMinute,
-            //imageKeys.imageURL: urlString,
+            "imageName": imageName,
             "timestamp": FieldValue.serverTimestamp()
         ])
         { err in
@@ -480,4 +565,3 @@ extension RunningViewController: MKMapViewDelegate
         return MKOverlayRenderer()
     }
 }
-

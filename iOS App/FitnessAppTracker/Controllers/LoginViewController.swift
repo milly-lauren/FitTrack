@@ -8,13 +8,10 @@
 
 import UIKit
 import Firebase
-import GoogleSignIn
-import FacebookLogin
+import FirebaseAuth
 
 class LoginViewController: UIViewController, UITextFieldDelegate
 {
-    // Place GIDSignInDelegate for Google Sign in
-    
 
     @IBOutlet weak var emailField: UITextField!
     
@@ -22,19 +19,42 @@ class LoginViewController: UIViewController, UITextFieldDelegate
     
     @IBOutlet weak var loginButton: UIButton!
     
-    //@IBOutlet weak var googleButton: GIDSignInButton!
-
     override func viewDidLoad()
     {
         super.viewDidLoad()
+        
+        loginButton.addTarget(self, action: #selector(loginUser), for: .touchUpInside)
+        
+        view.addSubview(loginButton)
+        setLoginButton(enable: false)
     
         emailField.delegate = self
         passwordField.delegate = self
         
-        // Issue
-        //GIDSignIn.sharedInstance().uiDelegate = self
-        //GIDSignIn.sharedInstance().signIn()
-        
+        emailField.addTarget(self, action: #selector(textFieldChanged), for: .editingChanged)
+        passwordField.addTarget(self, action: #selector(textFieldChanged), for: .editingChanged)
+    }
+    
+    
+    override func viewWillAppear(_ animated: Bool)
+    {
+        super.viewWillAppear(animated)
+        emailField.becomeFirstResponder()
+    }
+    
+    override func viewWillDisappear(_ animated: Bool)
+    {
+        super.viewWillDisappear(animated)
+        emailField.resignFirstResponder()
+        passwordField.resignFirstResponder()
+    }
+    
+    @objc func textFieldChanged(_ target: UITextField)
+    {
+        let email = emailField.text
+        let password = passwordField.text
+        let formFilled = email != nil && email != "" && password != nil && password != ""
+        setLoginButton(enable: formFilled)
     }
     
     // Function to login user with email and password
@@ -62,23 +82,23 @@ class LoginViewController: UIViewController, UITextFieldDelegate
         }
     }
     
-//    // Function to sign in using a Google Account
-//    func sign(_ signIn: GIDSignIn!, didSignInFor user: GIDGoogleUser!, withError error: Error?) {
-//        // ...
-//        if let error = error {
-//            // ...
-//            return
-//        }
-//
-//        guard let authentication = user.authentication else { return }
-//        let credential = GoogleAuthProvider.credential(withIDToken: authentication.idToken,
-//                                                       accessToken: authentication.accessToken)
-//        // ...
-//    }
-    
     func textFieldShouldReturn(_ textField: UITextField) -> Bool
     {
-        textField.resignFirstResponder()
+        switch textField {
+        case emailField:
+            emailField.resignFirstResponder()
+            passwordField.becomeFirstResponder()
+            break
+        
+        case passwordField:
+            loginUser(textField)
+            break
+            
+        default:
+            break
+        }
+        
+        //textField.resignFirstResponder()
         return true
     }
     
@@ -89,51 +109,19 @@ class LoginViewController: UIViewController, UITextFieldDelegate
         passwordField.resignFirstResponder()
     }
     
-    //    override func viewWillAppear(_ animated: Bool)
-    //    {
-    //        super.viewWillAppear(animated)
-    //        emailField.becomeFirstResponder()
-    //    }
-    //
-    //    override func viewWillDisappear(_ animated: Bool)
-    //    {
-    //        super.viewWillDisappear(animated)
-    //        emailField.resignFirstResponder()
-    //        passwordField.resignFirstResponder()
-    //    }
-    
-    //    @objc func textFieldChanged(_ target: UITextField)
-    //    {
-    //        let email = emailField.text
-    //        let password = passwordField.text
-    //        let formFilled = email != nil && email != "" && password != nil && password != ""
-    //        setLoginButton(enable: formFilled)
-    //    }
-    
-//    // Enables and Disable Login Button
-//    func setLoginButton(enable: Bool)
-//    {
-//        if enable
-//        {
-//            loginButton.alpha = 1.0
-//            loginButton.isEnabled = true
-//        }
-//
-//        else
-//        {
-//            loginButton.alpha = 0.5
-//            loginButton.isEnabled = false
-//        }
-//    }
+    // Enables and Disable Login Button
+    func setLoginButton(enable: Bool)
+    {
+        if enable
+        {
+            loginButton.alpha = 1.0
+            loginButton.isEnabled = true
+        }
 
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+        else
+        {
+            loginButton.alpha = 0.5
+            loginButton.isEnabled = false
+        }
     }
-    */
-
 }

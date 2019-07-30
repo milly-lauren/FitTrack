@@ -8,6 +8,7 @@
 
 import UIKit
 import Firebase
+import FirebaseAuth
 
 class SignupViewController: UIViewController, UITextFieldDelegate
 {
@@ -26,14 +27,11 @@ class SignupViewController: UIViewController, UITextFieldDelegate
     {
         super.viewDidLoad()
         
-        
         signupButton.addTarget(self, action: #selector(createUser), for: .touchUpInside)
         
         view.addSubview(signupButton)
         setSignupButton(enable: false)
         
-        //view.addSubview(activityView)
-    
         nameField.delegate = self
         emailField.delegate = self
         passwordField.delegate = self
@@ -149,7 +147,7 @@ class SignupViewController: UIViewController, UITextFieldDelegate
                         signinAlert.addAction(defaultAction)
                         self.present(signinAlert, animated: true, completion: nil)
                         
-                        //print("Error creating user: \(error!.localizedDescription)")
+                        print("Error creating user: \(error!.localizedDescription)")
                     }
                     
                 }
@@ -163,7 +161,7 @@ class SignupViewController: UIViewController, UITextFieldDelegate
                 signinAlert.addAction(defaultAction)
                 self.present(signinAlert, animated: true, completion: nil)
                 
-                //print("Error creating user: \(error!.localizedDescription)")
+                print("Error creating user: \(error!.localizedDescription)")
             }
         }
     }
@@ -177,16 +175,7 @@ class SignupViewController: UIViewController, UITextFieldDelegate
     }
     
     
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
-    }
-    */
-
+    
 }
 
 //extension LoginViewController: UITextFieldDelegate
